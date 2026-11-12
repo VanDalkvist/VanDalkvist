@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Zero"><title>Zero — Composable harness foundation</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.12s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.28s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#F6F5F0"/>
+<g transform="translate(0 0)" fill="#29231D" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="31" font-weight="500">Agent pipelines</text>
+<path d="M26 105 H854" fill="none" stroke="#D4CABD" stroke-width="1"/>
+</g>
+<g class="copy" fill="#29231D"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Zero</text></g>
+<g transform="translate(-7 188)" stroke="#B65A34" color="#B65A34" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="82" y="53" width="31" height="31" rx="3"/><rect x="33" y="51" width="29" height="29" rx="3"/><rect x="132" y="22" width="29" height="29" rx="3"/><rect x="132" y="90" width="29" height="29" rx="3"/><path d="M62 66 H81 M114 58 L131 41 M114 77 L131 105"/></g></g>
+<text x="26" y="350" fill="#685F54" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Composable harness foundation</text>
+</svg>

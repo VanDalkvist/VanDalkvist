@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="IOC Film"><title>IOC Film — Software architecture as film</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.45s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.67s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#F6F5F0"/>
+<g transform="translate(-660 0)" fill="#29231D" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="31" font-weight="500">Narrative and meaning</text>
+<path d="M26 105 H854" fill="none" stroke="#D4CABD" stroke-width="1"/>
+</g>
+<g class="copy" fill="#29231D"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">IOC Film</text></g>
+<g transform="translate(-7 184)" stroke="#B65A34" color="#B65A34" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="33" y="51" width="40" height="31" rx="3"/><rect x="125" y="51" width="40" height="31" rx="3"/><path d="M75 65 H122 M116 59 L123 65 L116 71"/><path d="M94 48 V26 H146 V48"/></g></g>
+<text x="26" y="350" fill="#685F54" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Software architecture as film</text>
+</svg>

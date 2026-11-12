@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Город навыков"><title>Город навыков — Выборы с последствиями</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.45s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.67s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#1E1C1A"/>
+<g transform="translate(-660 0)" fill="#ECE4D6" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="32" font-weight="500">Игровые механики</text>
+<path d="M26 105 H854" fill="none" stroke="#504940" stroke-width="1"/>
+</g>
+<g class="copy" fill="#ECE4D6"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Город навыков</text></g>
+<g transform="translate(-39 173)" stroke="#E5A476" color="#E5A476" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><path d="M104 103 V71 L65 49 M104 71 L143 49 M104 71 V38"/><circle cx="65" cy="49" r="10"/><circle cx="143" cy="49" r="10"/><circle cx="104" cy="37" r="10"/></g></g>
+<text x="26" y="350" fill="#B8AC9F" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Выборы с последствиями</text>
+</svg>

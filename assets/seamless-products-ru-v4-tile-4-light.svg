@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Ферма"><title>Ферма — Мастерская моих проектов</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.45s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.67s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#F6F5F0"/>
+<g transform="translate(-660 0)" fill="#29231D" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="32" font-weight="500">Продукты и интерфейсы</text>
+<path d="M26 105 H854" fill="none" stroke="#D4CABD" stroke-width="1"/>
+</g>
+<g class="copy" fill="#29231D"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Ферма</text></g>
+<g transform="translate(-18 173)" stroke="#B65A34" color="#B65A34" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="44" y="37" width="48" height="34" rx="3"/><rect x="104" y="37" width="48" height="34" rx="3"/><rect x="44" y="81" width="48" height="34" rx="3"/><rect x="104" y="81" width="48" height="34" rx="3"/><path d="M54 54 H82 M114 48 H141 M114 59 H130 M55 97 H81"/></g></g>
+<text x="26" y="350" fill="#685F54" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Мастерская моих проектов</text>
+</svg>

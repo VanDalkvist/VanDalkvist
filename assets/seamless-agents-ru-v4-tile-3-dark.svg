@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Arch Rules"><title>Arch Rules — Правила архитектуры для AI</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.34s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.54s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#1E1C1A"/>
+<g transform="translate(-440 0)" fill="#ECE4D6" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="32" font-weight="500">Агентские пайплайны</text>
+<path d="M26 105 H854" fill="none" stroke="#504940" stroke-width="1"/>
+</g>
+<g class="copy" fill="#ECE4D6"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Arch Rules</text></g>
+<g transform="translate(-18 179)" stroke="#E5A476" color="#E5A476" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="44" y="31" width="114" height="83" rx="4"/><path d="M59 51 H145 M59 72 H145 M59 93 H145"/><path d="M61 46 L67 52 L76 39 M61 67 L67 73 L76 60"/></g></g>
+<text x="26" y="350" fill="#B8AC9F" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Правила архитектуры для AI</text>
+</svg>

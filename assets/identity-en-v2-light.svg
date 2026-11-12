@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="258" viewBox="0 0 880 258" role="img" aria-label="Hi, I'm Vanya. 15 years of coding, five at Yandex. These days I make interactive stories, experiment with games, and build tools for AI agents."><title>Hi, I'm Vanya</title>
+<style>@keyframes enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}@keyframes trace{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}@keyframes breathe{0%,100%{opacity:.45}50%{opacity:.85}}.hero-title{animation:enter .7s ease-out both}.hero-text{animation:enter .65s ease-out .19s both}.hero-wave{stroke-dasharray:430;animation:trace 2.2s ease-out .4s both}.hero-point{animation:breathe 2s ease-in-out 2.2s 2 both}@media(prefers-reduced-motion:reduce){.hero-title,.hero-text,.hero-wave,.hero-point{animation:none!important;opacity:1!important;stroke-dashoffset:0!important;transform:none!important}}</style>
+<rect width="880" height="258" fill="#F6F5F0"/>
+<g class="hero-title" fill="#29231D" font-family="Manrope,Arial,sans-serif"><text x="26" y="106" font-size="52" font-weight="500">Hi, I'm Vanya</text></g>
+<path d="M432 37 V196" fill="none" stroke="#D4CABD" stroke-width="1"/>
+<g class="hero-text" font-family="Manrope,Arial,sans-serif">
+<text x="463" y="65" font-weight="600" font-size="20" fill="#29231D">15 years of coding, five at Yandex.</text>
+<text x="463" y="112" font-size="17" font-weight="400" fill="#685F54">These days I make interactive stories,</text><text x="463" y="140" font-size="17" font-weight="400" fill="#685F54">experiment with games,</text><text x="463" y="168" font-size="17" font-weight="400" fill="#685F54">and build tools for AI agents.</text>
+</g>
+<path class="hero-wave" d="M26 185 C59 184 68 157 95 161 S140 213 171 190 S221 170 246 187 S288 178 311 161 S356 154 386 172" stroke="#B65A34" stroke-width="1.7" opacity=".38" fill="none" stroke-linecap="round"/>
+<circle class="hero-point" cx="95" cy="161" r="4.5" fill="#B65A34" opacity=".45"/>
+<path d="M26 234 H854" stroke="#D4CABD" stroke-width="1" fill="none"/></svg>
