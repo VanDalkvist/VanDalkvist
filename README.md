@@ -1,4 +1,4 @@
-<p align="right"><a href="https://vanya-arc.dev"><strong>Моя история ↗</strong></a> &nbsp; · &nbsp; <a href="https://ui.vanya-arc.dev"><strong>Дизайн-система ↗</strong></a></p>
+<p align="right"><a href="https://vanya-arc.dev"><strong>Моя история ↗</strong></a> &nbsp; · &nbsp; <a href="https://ui.vanya-arc.dev"><strong>Дизайн-система ↗</strong></a> &nbsp; · &nbsp; <a href="README.en.md" title="English version"><strong>EN</strong></a></p>
 
 # Привет, я Ваня
 
