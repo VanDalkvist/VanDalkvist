@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Repo Story"><title>Repo Story — AI превращает код в сюжет</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.12s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.28s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#1E1C1A"/>
+<g transform="translate(0 0)" fill="#ECE4D6" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="32" font-weight="500">Игровые механики</text>
+<path d="M26 105 H854" fill="none" stroke="#504940" stroke-width="1"/>
+</g>
+<g class="copy" fill="#ECE4D6"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Repo Story</text></g>
+<g transform="translate(-6 172)" stroke="#E5A476" color="#E5A476" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="32" y="38" width="59" height="61" rx="4"/><path d="M44 52 H78 M44 63 H71 M44 74 H80"/><path d="M93 69 H118 M114 64 L120 69 L114 74 M122 69 L144 45 M122 69 L144 95"/><circle cx="150" cy="43" r="10"/><circle cx="150" cy="97" r="10"/></g></g>
+<text x="26" y="350" fill="#B8AC9F" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">AI превращает код в сюжет</text>
+</svg>

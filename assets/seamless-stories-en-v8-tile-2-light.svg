@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="380" viewBox="0 0 220 380" role="img" aria-label="Fireplace"><title>Fireplace — Words around a shared fire</title>
+<style>@keyframes show{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes line{from{stroke-dashoffset:430}to{stroke-dashoffset:0}}.copy{animation:show .55s ease-out 0.23s both}.drawing{stroke-dasharray:430;animation:line 1.45s ease-out 0.41s both}@media(prefers-reduced-motion:reduce){.copy,.drawing{animation:none!important;opacity:1!important;transform:none!important;stroke-dashoffset:0!important}}</style>
+<rect width="220" height="380" fill="#F6F5F0"/>
+<g transform="translate(-220 0)" fill="#29231D" font-family="Manrope,Arial,sans-serif">
+<text x="26" y="77" font-size="31" font-weight="500">Narrative and meaning</text>
+<path d="M26 105 H854" fill="none" stroke="#D4CABD" stroke-width="1"/>
+</g>
+<g class="copy" fill="#29231D"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Fireplace</text></g>
+<g transform="translate(-27 181)" stroke="#B65A34" color="#B65A34" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><path d="M90 95 C70 78 83 52 96 29 C128 47 133 80 112 96 Z"/><path d="M99 94 C90 79 108 68 109 56 C130 75 117 90 109 96"/><path d="M53 104 Q104 119 152 104"/></g></g>
+<path d="M178 142 L199 121 M187 121 H199 V133" stroke="#685F54" stroke-opacity=".62" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+<text x="26" y="350" fill="#685F54" font-family="Manrope,Arial,sans-serif" font-size="12" font-weight="400">Words around a shared fire</text>
+</svg>
