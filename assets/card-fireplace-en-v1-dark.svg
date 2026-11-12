@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="168" viewBox="0 0 280 168" role="img" aria-label="Fireplace">
+<title>Fireplace — Words around the fire</title>
+<style>@keyframes reveal{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}@keyframes iconIn{from{opacity:0}to{opacity:.77}}.copy{animation:reveal .6s ease-out .12s both}.art{animation:iconIn .9s ease-out .45s both}@media(prefers-reduced-motion:reduce){.copy,.art{animation:none!important;opacity:1!important;transform:none!important}}</style>
+<rect width="280" height="168" fill="#201E1B"/><rect x="1" y="1" width="278" height="166" rx="8" fill="none" stroke="#4C453D" stroke-width="1"/>
+<g class="copy" font-family="Manrope,Arial,sans-serif" fill="#EEE4D9">
+<text x="17" y="34" font-size="18" font-weight="600">Fireplace</text>
+<text x="18" y="55" font-size="9.5" letter-spacing=".35" fill="#B9AC9E">GROUP EXPERIENCE</text>
+<path d="M 18 73 H 262" stroke="#4C453D" stroke-width=".9"/>
+<text x="18" y="119" font-size="12.1" fill="#EEE4D9">Words around the fire</text>
+<text x="18" y="150" font-size="10" letter-spacing=".3" fill="#B9AC9E">OPEN ↗</text>
+</g>
+<g class="art" stroke="#E5A476" color="#E5A476" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M 222 123 C 209 108 230 97 227 83 C 250 96 252 110 240 123 Z"/><path d="M 227 123 C 226 113 237 108 235 102 C 243 109 245 118 240 123"/><path d="M 206 129 Q 233 137 260 129"/></g>
+</svg>
