@@ -58,4 +58,4 @@
 
 ---
 
-[Все публичные репозитории](https://github.com/VanDalkvist?tab=repositories) · [Написать в Telegram](https://t.me/i_van_afanasov)
+[Все публичные репозитории](https://github.com/VanDalkvist?tab=repositories)
