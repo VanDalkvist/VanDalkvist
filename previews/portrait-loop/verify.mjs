@@ -32,6 +32,10 @@ for(const theme of ['dark','light']) {
   assert.notEqual(hashes[33],hashes[66]); assert.notEqual(hashes[66],hashes[132]);
   execFileSync('ffmpeg',['-v','error','-y','-i',file,'-vf','select=eq(n\\,0)+eq(n\\,33)+eq(n\\,66)+eq(n\\,132)+eq(n\\,218)+eq(n\\,284)','-fps_mode','vfr',root+`verification/${theme}-%02d.png`]);
   report.gifs[theme]={...info.streams[0],bytes:Number(info.format.size),loop:'infinite',reverseFramesIdentical:true,seamIdentical:true};
+  // #913: the first export baked white SVG letterboxing into the portrait's edges.
+  const edges=execFileSync('magick',[root+`verification/${theme}-04.png`,'-alpha','off','-format','%[hex:p{0,0}] %[hex:p{0,599}]','info:'],{encoding:'utf8'}).trim().toLowerCase();
+  const expected=theme==='dark'?'1a1817':'f5f3ed';
+  assert.equal(edges,`${expected} ${expected}`,'Portrait edge must match its theme background');
   if(theme==='light') {
     // #913: the first light preview lost tonal support on both beard sides.
     const mean=crop=>Number(execFileSync('magick',[root+'verification/light-04.png','-alpha','off','-crop',crop,'-format','%[fx:mean]','info:'],{encoding:'utf8'}));

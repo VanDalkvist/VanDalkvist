@@ -31,7 +31,9 @@ try {
   const fps=25, end=132, holdFull=20, holdStart=6;
   for(const [theme,svg] of [['dark',source],['light',light]]) {
     const frames=root+`frames-${theme}/`; await mkdir(frames,{recursive:true});
-    await page.setContent('<style>body{margin:0}svg{display:block}</style>'+svg);
+    // #913 profile preview: the fractional SVG letterbox must not bake white edge lines into GIFs.
+    const background=theme==='dark'?'#1a1817':colors.ground;
+    await page.setContent(`<style>body{margin:0;background:${background}}svg{display:block}</style>`+svg);
     assert.equal(await page.evaluate(()=>document.getAnimations().length),theme==='dark'?37:74);
     await page.evaluate(()=>document.getAnimations().forEach(a=>a.pause()));
     for(let i=0;i<=end;i++) {

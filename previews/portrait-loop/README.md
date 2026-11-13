@@ -1,6 +1,6 @@
 # Portrait loop — preview round 2
 
-Local preview only. Neither profile README nor the original portrait is changed.
+The original portrait is unchanged. The accepted portrait is now used in the proposed profile update; see `../profile/` for that separate pre-publication layout preview.
 
 ## Outputs
 
@@ -39,6 +39,6 @@ Open http://127.0.0.1:48731/previews/portrait-loop/ . Switch between animation a
 
 `export.mjs` pauses real Chromium CSS animations and seeks their original timeline at 40 ms intervals, preserving CSS easing and translation. FFmpeg quantizes to one global palette per GIF, without temporal error-diffusion noise, then writes the infinite-loop extension. Export may take a few minutes for 266 browser captures.
 
-`verify.mjs` asserts the original source SHA-256, identical source geometry/motion in both light layers, GIF dimensions/duration/frame count/infinite-loop bytes, all 132 decoded reverse-frame pairs, full hold, identical seam and retained shading on both light beard sides. It writes actual decoded inspection frames. GIFs cannot honor reduced-motion preferences; the preview starts with stills for that preference, and the SVG retains the original reduced-motion rule.
+`verify.mjs` asserts the original source SHA-256, identical source geometry/motion in both light layers, GIF dimensions/duration/frame count/infinite-loop bytes, all 132 decoded reverse-frame pairs, full hold, identical seam, retained shading on both light beard sides and theme-matching edge pixels (no baked white letterbox). It writes actual decoded inspection frames. GIFs cannot honor reduced-motion preferences; the preview starts with stills for that preference, and the SVG retains the original reduced-motion rule.
 
 Primary tool references: [Playwright animations API](https://playwright.dev/docs/api/class-page#page-evaluate), [Web Animations currentTime](https://developer.mozilla.org/en-US/docs/Web/API/Animation/currentTime), [FFmpeg palettegen/paletteuse](https://ffmpeg.org/ffmpeg-filters.html#palettegen), [ImageMagick blur/alpha](https://imagemagick.org/script/command-line-options.php#blur). Installed FFmpeg filter help was checked before export.
