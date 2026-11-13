@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Портрет · превью цикла</title><link rel="icon" href="data:,">
+<style>
+:root{color-scheme:light;background:#f5f3ed;color:#2a241f;font:15px/1.5 system-ui,sans-serif}*{box-sizing:border-box}body{max-width:1420px;margin:0 auto;padding:36px}header{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:28px}h1{font-size:26px;font-weight:500;letter-spacing:-.04em;margin:0 0 8px}p{margin:0;color:#706b66}.controls{display:flex;gap:8px;flex-wrap:wrap}button,a{color:inherit}button{font:inherit;background:transparent;border:1px solid #d5d0c8;border-radius:7px;padding:7px 13px;cursor:pointer}button:hover{background:#eae6df;box-shadow:0 2px 6px #2a241f0b}button[aria-pressed=true]{background:#2a241f;color:#f5f3ed}.portraits{display:grid;grid-template-columns:1fr 1fr;gap:28px}figure{margin:0;min-width:0}figure img{width:100%;height:auto;display:block}figure:first-child .image{background:#1a1817}figure:last-child .image{background:#f5f3ed}.image{overflow:hidden;border-radius:8px}figcaption{display:flex;justify-content:space-between;gap:12px;padding:15px 0 0}figcaption strong{font-weight:500}small{color:#706b66}a{text-underline-offset:4px;text-decoration-color:#bdbab4}footer{margin:30px 0 16px;display:flex;gap:20px;flex-wrap:wrap;color:#706b66;font-size:13px}details{margin-top:24px}summary{cursor:pointer;color:#706b66}.frames{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:16px}.frames img{width:100%;display:block}.frames p{font-size:11px;margin-top:5px}.note{font-size:13px;max-width:800px;margin-top:24px}@media(max-width:800px){body{padding:24px 16px}header{display:block}.controls{margin-top:20px}.portraits{grid-template-columns:1fr;gap:30px}.frames{grid-template-columns:repeat(3,1fr)}figcaption{flex-wrap:wrap}}
+</style>
+<header><div><h1>Портрет · зацикленная анимация</h1><p>Разворачивается вниз → пауза → сворачивается вверх.</p></div><div class="controls"><button id="motion" aria-pressed="true">Анимация</button><button id="still" aria-pressed="false">Полный портрет</button><button id="replay">С начала ↻</button></div></header>
+<main class="portraits">
+<figure><div class="image"><img id="dark" src="avatar-portrait-dark-loop.gif" width="658" height="600" alt="Исходный портрет, зацикленный вниз и обратно вверх"></div><figcaption><strong>Тёмный · исходная палитра</strong><span><a href="avatar-portrait-dark-loop.gif" download>GIF ↓</a> · <a href="../../assets/avatar-portrait-dark-v6.svg">Исходный SVG</a></span></figcaption></figure>
+<figure><div class="image"><img id="light" src="avatar-portrait-light-loop.gif" width="658" height="600" alt="Тот же портрет на тёплой бумаге с чернильной палитрой"></div><figcaption><strong>Светлый · бумага и чернила</strong><span><a href="avatar-portrait-light-loop.gif" download>GIF ↓</a> · <a href="avatar-portrait-light.svg" download>SVG ↓</a></span></figcaption></figure>
+</main>
+<footer><span>658 × 600</span><span>25 кадров/с · 11,64 с · бесконечный цикл</span><span>GIF: тёмный 3,47 МБ · светлый 3,53 МБ</span><span>Локальное превью · не опубликовано</span></footer>
+<p class="note">Черты, кадрирование, штрихи и исходное проявление сохранены. Светлая палитра — бумага, чернила и терракота vanya-arc/ui. Тональная маска из исходных штрихов сохраняет тени лица, чтобы портрет не превращался в негатив. Подложка и дуга остаются на месте.</p>
+<details><summary>Кадры цикла · проверка направления и стыка</summary><div id="frames"></div></details>
+<script>
+const motion=document.querySelector('#motion'),still=document.querySelector('#still');
+function show(animated){motion.setAttribute('aria-pressed',animated);still.setAttribute('aria-pressed',!animated);for(const t of ['dark','light'])document.querySelector('#'+t).src=animated?`avatar-portrait-${t}-loop.gif?restart=${Date.now()}`:`${t}-full.png`;}
+motion.onclick=()=>show(true);still.onclick=()=>show(false);document.querySelector('#replay').onclick=()=>show(true);
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)show(false);
+const labels=['0 с · начало','1,32 с · вниз','2,64 с · вниз','5,28 с · полный','8,72 с · вверх','11,36 с · стык'];
+for(const t of ['dark','light']){const row=document.createElement('div');row.className='frames';labels.forEach((label,i)=>{const frame=document.createElement('div'),img=document.createElement('img'),text=document.createElement('p');img.src=`verification/${t}-${String(i+1).padStart(2,'0')}.png`;img.alt=label;text.textContent=label;frame.append(img,text);row.append(frame)});document.querySelector('#frames').append(row);}
+</script>
+</html>

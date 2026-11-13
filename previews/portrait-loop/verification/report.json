@@ -1,0 +1,28 @@
+{
+  "sourceUnchanged": true,
+  "lightGeometryAndMotionIdentical": true,
+  "gifs": {
+    "dark": {
+      "width": 658,
+      "height": 600,
+      "r_frame_rate": "25/1",
+      "duration": "11.640000",
+      "nb_frames": "291",
+      "bytes": 3471243,
+      "loop": "infinite",
+      "reverseFramesIdentical": true,
+      "seamIdentical": true
+    },
+    "light": {
+      "width": 658,
+      "height": 600,
+      "r_frame_rate": "25/1",
+      "duration": "11.640000",
+      "nb_frames": "291",
+      "bytes": 3529774,
+      "loop": "infinite",
+      "reverseFramesIdentical": true,
+      "seamIdentical": true
+    }
+  }
+}
