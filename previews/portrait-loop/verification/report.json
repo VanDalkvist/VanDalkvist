@@ -19,10 +19,14 @@
       "r_frame_rate": "25/1",
       "duration": "11.640000",
       "nb_frames": "291",
-      "bytes": 3529774,
+      "bytes": 3483924,
       "loop": "infinite",
       "reverseFramesIdentical": true,
-      "seamIdentical": true
+      "seamIdentical": true,
+      "beardSideMeans": {
+        "left": 0.489077,
+        "right": 0.235119
+      }
     }
   }
 }

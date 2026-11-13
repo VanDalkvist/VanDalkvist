@@ -32,6 +32,13 @@ for(const theme of ['dark','light']) {
   assert.notEqual(hashes[33],hashes[66]); assert.notEqual(hashes[66],hashes[132]);
   execFileSync('ffmpeg',['-v','error','-y','-i',file,'-vf','select=eq(n\\,0)+eq(n\\,33)+eq(n\\,66)+eq(n\\,132)+eq(n\\,218)+eq(n\\,284)','-fps_mode','vfr',root+`verification/${theme}-%02d.png`]);
   report.gifs[theme]={...info.streams[0],bytes:Number(info.format.size),loop:'infinite',reverseFramesIdentical:true,seamIdentical:true};
+  if(theme==='light') {
+    // #913: the first light preview lost tonal support on both beard sides.
+    const mean=crop=>Number(execFileSync('magick',[root+'verification/light-04.png','-alpha','off','-crop',crop,'-format','%[fx:mean]','info:'],{encoding:'utf8'}));
+    const left=mean('70x100+240+450'),right=mean('50x100+500+450');
+    assert.ok(left<.60&&right<.40,`Beard sides lost their shading: ${left}, ${right}`);
+    report.gifs[theme].beardSideMeans={left,right};
+  }
 }
 writeFileSync(root+'verification/report.json',JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report,null,2));

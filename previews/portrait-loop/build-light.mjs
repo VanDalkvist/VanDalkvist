@@ -12,21 +12,26 @@ export async function buildLight(page,source,map,ground,root,outsideMap) {
   const density=execFileSync('magick',[root+'portrait-alpha.png','-alpha','extract','-blur','0x12','-depth','8','gray:-']);
   // Keep the dominant connected portrait, not detached peripheral flecks.
   const width=658,height=600,seen=new Uint8Array(width*height);
+  // #913 preview feedback: uniform density discarded the sparse beard sides.
+  // Ease into a lower density range below the mouth; keep the existing face untouched.
+  const lowerWeight=y=>{const t=Math.min(1,Math.max(0,(y-360)/170));return t*t*(3-2*t);};
+  const ceilings=Array.from({length:height},(_,y)=>46-30*lowerWeight(y));
+  const supported=p=>density[p]>5;
   let largest=[];
   for(let seed=0;seed<density.length;seed++) {
-    if(seen[seed]||density[seed]<=5)continue;
+    if(seen[seed]||!supported(seed))continue;
     const component=[seed];seen[seed]=1;
     for(let j=0;j<component.length;j++) {
       const p=component[j],x=p%width,y=Math.floor(p/width);
       const neighbors=[];
       if(x>0)neighbors.push(p-1);if(x<width-1)neighbors.push(p+1);
       if(y>0)neighbors.push(p-width);if(y<height-1)neighbors.push(p+width);
-      for(const n of neighbors)if(!seen[n]&&density[n]>5){seen[n]=1;component.push(n);}
+      for(const n of neighbors)if(!seen[n]&&supported(n)){seen[n]=1;component.push(n);}
     }
     if(component.length>largest.length)largest=component;
   }
   const mask=Buffer.alloc(width*height);
-  for(const p of largest)mask[p]=Math.round(Math.min(1,Math.max(0,(density[p]-5)/(46-5)))*255);
+  for(const p of largest){const y=Math.floor(p/width);mask[p]=Math.round(Math.min(1,Math.max(0,(density[p]-5)/(ceilings[y]-5)))*255);}
   execFileSync('magick',['-size',`${width}x${height}`,'-depth','8','gray:-','-blur','0x2',root+'portrait-support.png'],{input:mask});
   const support=(await readFile(root+'portrait-support.png')).toString('base64');
   const recolor=(s,palette)=>s.replace(/#[A-Fa-f0-9]{6}/g,c=>palette[c]);
