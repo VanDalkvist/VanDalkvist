@@ -8,9 +8,51 @@ for(const [preview,asset] of [['avatar-portrait-dark-loop.gif','avatar-portrait-
 for(const language of ['ru','en']) {
   const text=await readFile(new URL(`assets/identity-${language}-portrait-v1.svg`,root),'utf8');
   const light=await readFile(new URL(`assets/identity-${language}-portrait-v1-light.svg`,root),'utf8');
+  assert.ok(!text.includes('M27 306 H505') && !light.includes('M27 306 H505'),'Identity under-text divider must be absent');
   const withoutColors=s=>s.replace(/#[a-fA-F0-9]{6}/g,'COLOR').trim();
   assert.equal(withoutColors(light),withoutColors(text),'The light intro must retain its content and layout');
 }
+// Static cross-language/theme choreography contracts (independent SVG timings).
+for(const lang of ['ru','en'])for(const theme of ['light','dark']) {
+  const sections=['stories','games','products','agents'];
+  for(const [g,group] of sections.entries()){
+    const wave=await readFile(new URL(`assets/wave-0${g+1}-${group}-${lang}-v6-${theme}.svg`,root),'utf8');
+    assert.ok(wave.includes('animation:ink 2.8s ease-out 5.8s both'),'Wave delayed after portrait');
+    assert.ok(wave.includes('animation:pulse 2.2s ease-in-out 8.6s 3 both'),'Wave pulse delayed');
+    for(let tile=1;tile<=4;tile++){
+      const project=await readFile(new URL(`assets/seamless-${group}-${lang}-v8-tile-${tile}-${theme}.svg`,root),'utf8');
+      const index=g*4+tile-1, beginning=8.9+index*.9;
+      assert.ok(project.includes(`animation:show .45s ease-out ${beginning.toFixed(2)}s both`),'Project text sequenced');
+      assert.ok(project.includes(`animation:line .70s ease-out ${(beginning+.2).toFixed(2)}s both`),'Project illustration sequenced');
+      assert.match(project,/<text x="26" y="77" font-size="21" font-weight="600">/,'Section headings must match the navigation typography');
+      assert.match(project,/<text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="16">/,'Project headings must use reduced 16-unit scale');
+    }
+  }
+}
+for(const [theme,filename,bg] of [['dark','avatar-portrait-dark-v7.svg','#15120F'],['light','avatar-portrait-light-v2.svg','#F6F3ED']]){
+  const svg=await readFile(new URL('assets/'+filename,root),'utf8');
+  assert.ok(svg.includes(`fill="${bg}"`),'Portrait must match canonical Vanya UI background');
+  assert.ok(svg.includes('preserveAspectRatio="none"'),'Portrait must not have transparent letterbox');
+  assert.ok(svg.includes('prefers-reduced-motion:reduce'),'Portrait must support reduced motion');
+}
+const worker=await readFile(new URL('contributions/worker.js',root),'utf8');
+assert.ok(worker.includes('const at=monday+(w*7+dow)*DAY'),'Calendar dates must follow Monday first');
+assert.ok(worker.includes('function sliceCalendar(full,part,lang)'),'Calendar must support four cropped slices');
+assert.ok(worker.includes('height="235"'),'Keep full SVG height for spacing below the calendar');
+assert.ok(worker.includes('font-size="14" font-weight="400" fill="${t.sub}"'),'Inline count must be visually subordinate');
+assert.ok(!worker.includes('VANYA / ARC · GitHub'),'No calendar footer branding');
+assert.ok(!worker.includes('lang==="en"?"Less"'),'No Less/More legend');
+assert.ok(!worker.includes('palette.length;i++'),'No 21-chip footer legend');
+assert.ok(worker.includes('/?v=11&theme='),'Worker cache key should use latest calendar revision');
+assert.ok(worker.includes('function windowLight(date)'),'Each date must have a deterministic light schedule');
+assert.ok(worker.includes('Math.imul(seed ^ character.charCodeAt(0),16777619)'),'Animation timing must depend on date hash');
+assert.ok(worker.includes('count===0'),'Empty cells must stay neutral');
+assert.ok(worker.includes('class="window-light window-${light.kind}"'),'Active cells need their own colored overlays');
+assert.ok(worker.includes('prefers-reduced-motion:reduce'),'Animated windows must respect reduced motion');
+assert.ok(worker.includes('animation-fill-mode:both'),'Active windows should stay off until their delay, then stay on');
+assert.ok(worker.includes('animation-delay:${light.delay}s'),'Each window must have its date-based timing');
+
+
 const browser=await chromium.launch({executablePath:process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
 try {
   for(const language of ['ru','en'])for(const theme of ['light','dark'])for(const context of ['profile','file'])for(const width of [1100,390,375]) {
@@ -18,16 +60,23 @@ try {
     const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('requestfailed',r=>errors.push(r.url()));
     await page.goto(`http://127.0.0.1:48731/previews/profile/${language==='ru'?'':'en.html'}?theme=${theme}&context=${context}`);
     await page.waitForFunction(()=>[...document.querySelectorAll('article img')].every(i=>i.complete&&i.naturalWidth>0));
-    const images=await page.locator('article img').evaluateAll(imgs=>imgs.slice(0,10).map(i=>{const r=i.getBoundingClientRect();return {src:i.currentSrc,x:r.x,y:r.y,w:r.width,h:r.height};}));
+    const images=await page.locator('article img').evaluateAll(imgs=>imgs.slice(0,14).map(i=>{const r=i.getBoundingClientRect();return {src:i.currentSrc,x:r.x,y:r.y,w:r.width,h:r.height};}));
     assert.ok(images[4].src.includes(`identity-${language}-portrait-v1${theme==='light'?'-light':''}.svg`));
-    assert.ok(images[5].src.includes(`avatar-portrait-${theme}-loop-v1.gif`));
+    assert.ok(images[5].src.includes(theme==='dark'?'avatar-portrait-dark-v7.svg':'avatar-portrait-light-v2.svg'));
     assert.ok(images[4].x<images[5].x,'Text must be left of portrait');
     const left=images[0].x,right=images[3].x+images[3].w;
-    for(const [first,last] of [[4,5],[6,9]]){assert.ok(Math.abs(images[first].x-left)<.1);assert.ok(Math.abs(images[last].x+images[last].w-right)<.1);}
-    const headerGap=images[4].y-(images[0].y+images[0].h),heroGap=images[6].y-(images[4].y+Math.max(images[4].h,images[5].h));
-    console.log({language,theme,context,width,headerGap,heroGap,portrait:images[5].src.split('/').at(-1)});
+    for(const [first,last] of [[4,5],[6,9],[10,13]]){assert.ok(Math.abs(images[first].x-left)<.1);assert.ok(Math.abs(images[last].x+images[last].w-right)<.1);}
+    for(let part=0;part<4;part++)assert.ok(images[6+part].src.includes(`part=${part}`) || images[6+part].src.includes(`part%3D${part}`),`Calendar part ${part} must be present`);
+    assert.ok(images[6].src.includes(`lang=${language}`) || images[6].src.includes(`lang%3D${language}`),'Calendar must select the correct language');
+    assert.ok(images[6].src.includes(`theme=${theme}`) || images[6].src.includes(`theme%3D${theme}`),'Calendar must select the correct theme');
+    assert.ok(Math.abs(images.slice(6,10).reduce((n,i)=>n+i.w,0)-(right-left))<.2,'Four calendar slices must match the nav row');
+    const headerGap=images[4].y-(images[0].y+images[0].h);
+    const heroGap=images[6].y-(images[4].y+Math.max(images[4].h,images[5].h));
+    const calendarGap=images[10].y-(images[6].y+images[6].h);
+    console.log({language,theme,context,width,headerGap,heroGap,calendarGap,portrait:images[5].src.split('/').at(-1)});
     assert.ok(Math.abs(headerGap)<.1,'Header must meet the hero without an inline line-height gap');
-    assert.ok(Math.abs(heroGap)<.1,'Hero must meet the next SVG row');
+    assert.ok(Math.abs(heroGap)<.1,'Hero must meet the calendar');
+    assert.ok(Math.abs(calendarGap)<.1,'Calendar must meet the section tiles');
     assert.deepEqual(errors,[]);
     await page.close();
   }

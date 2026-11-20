@@ -2,11 +2,11 @@
 
 Proposed update to both profile READMEs:
 
-- Text on the left (60%), approved looping portrait on the right (40%).
+- Text on the left (60%), one-shot **vector halftone portrait** on the right (40%), preserving the accepted face.
 - Light/dark portraits and matching light/dark intro text.
-- Static PNG portraits when reduced motion is requested; the standalone light SVG remains available separately.
+- The active dark/light SVG portraits handle `prefers-reduced-motion` internally and render their final state without animation. Old GIF/PNG exports remain archived, not embedded in README.
 - Same four linked header tiles. Their height grows from 57 to 70 SVG units with centered vertical padding: at 375–390px the old tiles shrank below GitHub's inline line box, leaving a visible gap. The profile uses 14px/21px text; the file viewer uses 16px/24px. The intermediate 64px tiles still left a 0.4375px gap in the phone file viewer. Typography, content and horizontal alignment are unchanged.
-- Exported GIF backgrounds match their themes. The original SVG's fractional letterbox previously baked a light top/bottom line into the dark GIF.
+- The active SVG portraits use exact Vanya UI `--ground` colors and `preserveAspectRatio="none"` to avoid fractional transparent-edge letterboxing.
 
 The portrait drawing, accepted beard, source SVG, gallery and links are not redesigned.
 
@@ -32,4 +32,6 @@ node ../portrait-loop/verify.mjs
 
 Requires the existing installed Playwright/Chrome, FFmpeg/ImageMagick for portrait verification and authenticated `gh` for the Markdown API. No installs or publishing happen in these commands. `verify.mjs` expects the local repository server on port 48731.
 
-Core checks cover selected portrait/intro assets, text-left order, byte-identical copied portrait assets, color-only light intro adaptation, aligned row edges and zero header/hero gaps in both languages/themes and both GitHub contexts at 1100, 390 and 375px (24 cases). The initial mobile gap reproduced as **1.0625px**; it is now zero. The initial dark GIF edge regression was **#4e4c4c** instead of **#1a1817**; the portrait verifier checks both top and bottom corners. Real screenshots, theme/language controls and reduced-motion PNG selection were checked separately. Actual live GitHub verification covers the profile and both README file views after publication approval.
+Core checks cover selected portrait/intro assets, text-left order, the absence of the under-text divider, color-only light intro adaptation, 4-slice calendar width matching the four navigation panels, aligned row edges and zero gaps in both languages/themes and both GitHub contexts at 1100, 390 and 375px (24 cases). The initial mobile gap reproduced as **1.0625px**; it is now zero. The initial dark GIF edge regression was **#4e4c4c** instead of **#1a1817**; the portrait verifier checks both top and bottom corners. For the updated version, GitHub branch screenshots have been inspected on desktop and at 390px. Reduced-motion SVG fallback remains encoded in source, but full cross-browser automation has not been rerun here. Actual live GitHub verification covers the profile and both README file views after publication approval.
+
+**Regeneration notice:** committed `index.html` / `en.html` are preview snapshots and can lag behind current README edits. Run `node build.mjs` with authenticated `gh` before relying on them to validate the staged animation. The actual GitHub branch README is the primary current reference. The 16 project images stagger their SVG CSS animation delays; independent image loads prevent guaranteed shared-clock synchronization.
