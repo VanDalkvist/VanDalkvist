@@ -98,7 +98,7 @@ async function getDays(env) {
       const response=await fetch("https://api.github.com/graphql",{
         method:"POST",
         headers:{"Authorization":"Bearer "+env.GITHUB_TOKEN,"Content-Type":"application/json","User-Agent":"VanyaArc-ContributionCalendar/1.0"},
-        body:JSON.stringify({query:`query Calendar { user(login: "VanDalkvist") { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }`})
+        body:JSON.stringify({query:`query Calendar { viewer { login } user(login: "VanDalkvist") { contributionsCollection { restrictedContributionsCount contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }`})
       });
       if (!response.ok) throw new Error("GitHub GraphQL HTTP "+response.status);
       const json=await response.json();
@@ -107,6 +107,10 @@ async function getDays(env) {
       if (!Array.isArray(weeks)) throw new Error("Missing contribution weeks");
       const days=validate(weeks.flatMap(w=>(w.contributionDays||[]).map(d=>({date:d.date,count:d.contributionCount}))));
       days.source="github-graphql";
+      // Diagnostic aggregates only; never expose token or private repository details.
+      days.ownerMatches=json.data?.viewer?.login===USER;
+      days.reportedTotal=json.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions;
+      days.restrictedKnown=json.data?.user?.contributionsCollection?.restrictedContributionsCount>0;
       return days;
     } catch(err) {
       console.warn("GitHub GraphQL unavailable; using public contributions",String(err));
@@ -236,13 +240,13 @@ export default {
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
     const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
     if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
-    const cacheKey=new Request(url.origin+"/?v=12&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=13&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
       const days=await getDays(env);
       const svg=part===null?render(days,theme,lang):sliceCalendar(render(days,theme,lang),part,lang);
-      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*","Access-Control-Expose-Headers":"X-Contributions-Source","X-Contributions-Source":days.source||"unknown"}});
+      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*","Access-Control-Expose-Headers":"X-Contributions-Source, X-Contributions-Owner-Matches, X-Contributions-Reported-Total, X-Contributions-Restricted-Visible","X-Contributions-Source":days.source||"unknown","X-Contributions-Owner-Matches":String(days.ownerMatches===true),"X-Contributions-Reported-Total":String(days.reportedTotal??""),"X-Contributions-Restricted-Visible":String(days.restrictedKnown===true)}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
     }catch(err){
