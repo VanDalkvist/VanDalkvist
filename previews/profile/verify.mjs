@@ -12,6 +12,31 @@ for(const language of ['ru','en']) {
   const withoutColors=s=>s.replace(/#[a-fA-F0-9]{6}/g,'COLOR').trim();
   assert.equal(withoutColors(light),withoutColors(text),'The light intro must retain its content and layout');
 }
+// Static cross-language/theme choreography contracts (independent SVG timings).
+for(const lang of ['ru','en'])for(const theme of ['light','dark']) {
+  const sections=['stories','games','products','agents'];
+  for(const [g,group] of sections.entries()){
+    const wave=await readFile(new URL(`assets/wave-0${g+1}-${group}-${lang}-v6-${theme}.svg`,root),'utf8');
+    assert.ok(wave.includes('animation:ink 2.8s ease-out 5.8s both'),'Wave delayed after portrait');
+    assert.ok(wave.includes('animation:pulse 2.2s ease-in-out 8.6s 3 both'),'Wave pulse delayed');
+    for(let tile=1;tile<=4;tile++){
+      const project=await readFile(new URL(`assets/seamless-${group}-${lang}-v8-tile-${tile}-${theme}.svg`,root),'utf8');
+      const index=g*4+tile-1, beginning=8.9+index*.9;
+      assert.ok(project.includes(`animation:show .45s ease-out ${beginning.toFixed(2)}s both`),'Project text sequenced');
+      assert.ok(project.includes(`animation:line .70s ease-out ${(beginning+.2).toFixed(2)}s both`),'Project illustration sequenced');
+    }
+  }
+}
+for(const [theme,filename,bg] of [['dark','avatar-portrait-dark-v7.svg','#15120F'],['light','avatar-portrait-light-v2.svg','#F6F3ED']]){
+  const svg=await readFile(new URL('assets/'+filename,root),'utf8');
+  assert.ok(svg.includes(`fill="${bg}"`),'Portrait must match canonical Vanya UI background');
+  assert.ok(svg.includes('preserveAspectRatio="none"'),'Portrait must not have transparent letterbox');
+  assert.ok(svg.includes('prefers-reduced-motion:reduce'),'Portrait must support reduced motion');
+}
+const worker=await readFile(new URL('contributions/worker.js',root),'utf8');
+assert.ok(worker.includes('const at=monday+(w*7+dow)*DAY'),'Calendar dates must follow Monday first');
+assert.ok(worker.includes('function sliceCalendar(full,part,lang)'),'Calendar must support four cropped slices');
+
 const browser=await chromium.launch({executablePath:process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
 try {
   for(const language of ['ru','en'])for(const theme of ['light','dark'])for(const context of ['profile','file'])for(const width of [1100,390,375]) {
