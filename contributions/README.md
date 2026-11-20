@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=6) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=6) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=6) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=6) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=7) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=7) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=7) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=7) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -20,6 +20,12 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 - **Background harmonization caveat:** Existing profile tile SVGs predate the canonical Vanya UI ground colors and embed `#1E1C1A` (dark) / `#F6F5F0` (light), while Vanya UI's canonical ground is a different OKLCH value. Thus DOM spacing is zero, but slight color-field discontinuity may remain at the calendar's edge until those legacy assets are migrated to design tokens. This PR does *not* bulk-rewrite unrelated profile illustrations.
 - Reuse a single date/count/intensity model for all four localized theme variants.
 
+## Calendar week order
+
+- ISO layout: **Monday is the first row**, then Tuesday, Wednesday, Thursday, Friday, Saturday and Sunday. JavaScript UTC weekday is normalized with `(getUTCDay() + 6) % 7` before computing the first calendar week. Week columns and month captions both use Monday as their anchor.
+- RU weekday labels are **пн, ср, пт** on rows 0, 2, 4. EN weekday labels are **Mon, Wed, Fri** on the same rows.
+- Every theme and language uses the identical date-to-cell mapping, not separate permutations. A date retains its exact contribution count.
+
 ## Daily data and normalization
 
 - Official GitHub GraphQL `user.contributionsCollection.contributionCalendar.weeks[].contributionDays[]` is preferred **when a `GITHUB_TOKEN` Cloudflare secret is configured**.
@@ -30,7 +36,7 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=6`, partitioned by theme and language.
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=7`, partitioned by theme and language.
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
