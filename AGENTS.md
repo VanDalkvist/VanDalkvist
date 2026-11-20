@@ -18,17 +18,17 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 
 4. Preserve meaningful transparency and drawing geometry. The border color above is an **opaque approximation of a 10% alpha composited border**, not a replacement for CSS `--border` in web UIs. Recalculate if the design system changes. For SVG stroke elements with additional `opacity`, preserve that extra opacity.
 5. The current profile uses Manrope for UI typography, Fraunces only for editorial text, and JetBrains Mono for code/short metadata. Preserve the existing visual rhythms, calm layout, and reduced-motion fallbacks. Do not recolor halftone portrait layers as if they were one flat SVG background.
-6. **Current presentation assets only:** nav v4, identity portrait v1 text tiles, wave v6, seamless v8 for RU+EN and light+dark. Older versioned, unreferenced SVGs are archival; do not bulk-rewrite or delete them. Raster/GIF portraits are separate sources and must be verified for color-field edge mismatch when their surrounding SVGs change.
+6. **Current presentation assets only:** nav v4, identity portrait v1 text tiles, wave v6, seamless v8 for RU+EN and light+dark. Older versioned, unreferenced SVGs are archival; do not bulk-rewrite or delete them. The original GIF/PNG portraits remain archived; the active README uses `avatar-portrait-dark-v7.svg` / `avatar-portrait-light-v2.svg`, with canonical `--ground` backgrounds and one-shot vector reveal. Do not reintroduce a mismatched raster portrait as a fallback.
 
 ## Exact layout contract
 
 - GitHub README uses contiguous inline `<picture>` markup in one `<div align="center">`; avoid indentation, newlines, spaces or Markdown paragraphs **between adjacent panel images**. `<br/>` is a deliberate row break only. An empty line or a stray inline whitespace node can create visible seams on GitHub.
-- Four navigation tiles are 25% each (`220` SVG units × 4 = `880`), and the intro row consists of a 60% text tile (`528` SVG units) and a 40% portrait (`352` logical units). The contribution calendar is 100% wide, with an outer SVG `viewBox="0 0 880 235"` and full-bleed `rect width="880" height="235"`. Four section wave tiles and each project row are also 25% × 4.
+- Four navigation tiles are 25% each (`220` SVG units × 4 = `880`), and the intro row consists of a 60% text tile (`528` SVG units) and a 40% portrait (`352` logical units). The contribution calendar is **four adjacent 25%-width image slices** (`part=0..3`), each an SVG `viewBox="0 0 220 235"` showing one quarter of the same full-bleed 880×235 design. Four section wave tiles and each project row are also 25% × 4.
 - The row order is **navigation → intro/portrait → calendar → four section links → project rows** in both `README.md` and `README.en.md`. Put the calendar **below the portrait but above the section navigation**, not at the very bottom.
 - Use `<img align="top">` on each panel to avoid baseline gaps. Outer surfaces must join without spacing even at narrow widths; text and glyphs may have their own *internal* insets.
-- There are **two separate width contracts**: the outer 880-unit SVG panel must align with the other full-width rows; the calendar's internal plot should use most available horizontal space without clipping weekday labels. Current plot: 53 or 54 possible week columns (depending on the rolling range), 15-unit pitch, 12×12-day cells, 3-unit gutters, left x=55. Do not confuse internal chart padding with a page-level gap.
+- There are **two separate width contracts**: the outer 880-unit SVG panel must align with the other full-width rows; the calendar's internal plot should use most available horizontal space without clipping weekday labels. Current plot: 53 or 54 possible week columns (depending on the rolling range), 14.5-unit pitch, 11.5×11.5-day cells, 3-unit gutters, left x=80; weekday labels begin at x=26 and do not touch the grid. Do not confuse internal chart padding with a page-level gap.
 - Regenerating `nav-*-v4-*.svg` via `previews/profile/header.mjs` must preserve the 70-unit height and **apply the current Vanya UI colors** rather than copying old v2 colors.
-- When changing markup, update `previews/profile/verify.mjs` indices/tests to include the calendar row: indices 0–3 nav, 4–5 intro+portrait, 6 calendar, 7–10 wave sections; then project rows. Verify header-to-intro, intro-to-calendar, calendar-to-sections gaps are all zero, and calendar width matches the four nav tiles.
+- When changing markup, update `previews/profile/verify.mjs` indices/tests to include the calendar row: indices 0–3 nav, 4–5 intro+portrait, 6–9 calendar slices, 10–13 wave sections; then project rows. Verify header-to-intro, intro-to-calendar, calendar-to-sections gaps are all zero, and calendar width matches the four nav tiles.
 
 ## Contribution-calendar contract
 
@@ -37,9 +37,18 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - Use logarithmic activity normalization against the nonzero day's p99 value (details in `contributions/README.md`). Keep any fallback state explicit.
 - **Weeks start on Monday**, not Sunday. In JavaScript the UTC offset is `(date.getUTCDay() + 6) % 7`; top row is Monday (0), bottom row Sunday (6), and `weekIndex * 7 + rowIndex` must map back to the correct actual date.
 - RU has `пн / ср / пт`; EN has `Mon / Wed / Fri`. With Monday-first rows the visible labels belong at indices **0, 2, 4**; localize months, heading, legend, alt texts, fallback and date captions as necessary.
-- The two SVG endpoints are controlled with `theme=light|dark` and `lang=ru|en`; embed via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=8`) and update BOTH embed URLs AND the Worker's server-side cache key.
+- A full standalone 880-unit calendar is available without `part`; embed **all four cropped `part=0|1|2|3` endpoints** with `theme=light|dark` and `lang=ru|en` via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=9`) and update BOTH embed URLs AND the Worker's server-side cache key.
 - The Worker is separately deployed on Cloudflare as `vanya-contributions`. A GitHub commit alone does NOT deploy it: update the running Worker, verify response and both URLs, then report what was done.
 - Do not add scheduled GitHub Actions: the intended policy is to keep only backup jobs automated.
+
+## Staggered animation contract and limitations
+
+- Preserve the accepted halftone portrait **as vector geometry** in `assets/avatar-portrait-dark-v7.svg` and `assets/avatar-portrait-light-v2.svg`. Its `.b` bands use their original roughly 5.3-second one-shot reveal. Both include a `prefers-reduced-motion` static final state. The original looping GIFs remain in `assets/` for archival comparison, but must not be referenced in the active profile.
+- Stage the wave across all four adjacent fragments with the **same delay**: `.w` ink reveal starts at 5.8s and lasts 2.8s; pulse follows at 8.6s. Keep the four wave segments' animation clocks/presets identical.
+- Stage the 16 project cards **in reading order**, sections Narrative → Games → Products → Agents, tile 1–4 in each: card `i` uses text start `8.90 + i × 0.90` seconds, icon start `text + 0.20s`, text duration `0.45s`, line duration `0.70s`. RU/EN/dark/light must have identical times for matching card indices; all animation elements use `fill-mode: both`.
+- **Hard platform limit:** GitHub README is sanitized static Markdown. Each externally embedded SVG is its own document and starts its CSS timing at its own load/decode moment. Browser lazy loading, cache and reduced-motion preferences prevent guaranteed single-clock or event-driven choreography across these assets. These are approximate sequenced delays, not guaranteed pixel-perfect global synchronization. Do not promise otherwise; true synchronization requires an interactive hosted page with a shared timeline.
+- Use `@media(prefers-reduced-motion:reduce)` to render all portrait/wave/project content at its final state without waiting. Project links must remain working external anchors; do not replace the 16 tiles with one unclickable video or raster.
+- Do not leave a separator path under the intro text. Both light/dark RU/EN identity SVGs must omit the old `M27 306 H505` divider.
 
 ## Verification checklist for every change
 
@@ -47,7 +56,7 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 2. Confirm RU / EN both exist, including *dark* / *light* pictures. No stray Cyrillic in EN calendar labels or untranslated legend/fallback. Spot-check at least one specific Monday and Sunday to verify day-to-cell mapping.
 3. Inspect rendered **GitHub Markdown**, not just raw SVG, in light/dark modes, desktop and mobile width. Measure bounding boxes if possible: adjacent panel gaps must be zero, the calendar's outer width must match the nav+sections rows. Use `previews/profile/verify.mjs` for 1100, 390 and 375px profile/file contexts, adapting its fixtures as needed.
 4. Confirm that the contribution bar remains exactly 21 shades, zero is neutral, and highest active days are darkest. Check actual data-source failures rather than silently showing fabricated counts.
-5. If a changed SVG's background no longer matches a GIF/PNG portrait, either regenerate the raster source with the canonical background or disclose that remaining limitation. Do not claim perfect visual uniformity without checking that seam.
+5. The active portrait must be a dark/light SVG using the canonical background. Confirm `preserveAspectRatio="none"` eliminates transparent letterboxing. If adding a GIF/PNG again, regenerate it with the same background and verify decoded edge pixels. Archived GIFs are not active. Do not claim perfect visual uniformity without checking that seam.
 6. Keep PR work on the existing feature branch unless told to merge. Link the PR and published Worker preview and describe any checks that could not run.
 
 ## File responsibilities
