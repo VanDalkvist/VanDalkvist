@@ -128,6 +128,30 @@ async function getDays(env) {
     return validate((data.contributions||[]).map(d=>({date:d.date,count:d.count})));
   }
 }
+// Stable per-date timing: identical window order in both languages and themes.
+function windowLight(date) {
+  let seed=2166136261;
+  for(const character of date)seed=Math.imul(seed ^ character.charCodeAt(0),16777619);
+  const mix=seed>>>0;
+  const unit=mix/4294967296;
+  // Most lights click on; a few flutter as a light switch catches.
+  const kind=mix%13===0?"warm":mix%7===0?"flicker":"click";
+  // Each window finishes within the portrait's original ~5.28s reveal.
+  const delay=(.10+4.05*unit).toFixed(2);
+  return {kind,delay};
+}
+const LIGHT_STYLES=`<style>
+  @keyframes window-click {0%,24%{opacity:0}25%,100%{opacity:1}}
+  @keyframes window-flicker {0%,15%{opacity:0}16%,29%{opacity:1}30%,42%{opacity:.15}43%,59%{opacity:0}60%,100%{opacity:1}}
+  @keyframes window-warm {0%,24%{opacity:0}48%{opacity:.38}78%{opacity:.87}100%{opacity:1}}
+  .window-light{opacity:1;animation-duration:.65s;animation-timing-function:steps(1,end);animation-fill-mode:both}
+  .window-click{animation-name:window-click}
+  .window-flicker{animation-name:window-flicker}
+  .window-warm{animation-name:window-warm;animation-duration:.8s;animation-timing-function:ease-in-out}
+  @media (prefers-reduced-motion:reduce) {
+    .window-light{animation:none!important;opacity:1!important}
+  }
+</style>`;
 function render(days,theme,lang) {
   const t=THEMES[theme], palette=PALETTES[theme];
   const today=Date.now(), nowUTC=Date.UTC(new Date(today).getUTCFullYear(),new Date(today).getUTCMonth(),new Date(today).getUTCDate());
@@ -146,7 +170,7 @@ function render(days,theme,lang) {
   const weeks=Math.floor((end-monday)/DAY/7)+1;
   const step=14.5, size=11.5, left=80, top=84; // 3-unit gutters; reserve 54 units for weekday labels, preserve 880 outer width
   const title=total.toLocaleString(lang==="en"?"en-US":"ru-RU")+(lang==="en"?" GitHub contributions in the last year":" contributions за год");
-  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}<tspan dx="11" font-size="14" font-weight="400" fill="${t.sub}">· ${esc(total.toLocaleString(lang==="en"?"en-US":"ru-RU"))} contributions</tspan></text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
+  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title>${LIGHT_STYLES}<rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}<tspan dx="11" font-size="14" font-weight="400" fill="${t.sub}">· ${esc(total.toLocaleString(lang==="en"?"en-US":"ru-RU"))} contributions</tspan></text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   let prevMonth=-1;
   const monthLabels=[];
@@ -158,7 +182,14 @@ function render(days,theme,lang) {
       if(count===undefined)continue;
       const x=left+w*step,y=top+dow*step;
       const level=intensity(count);
-      chunks.push(`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="2" fill="${palette[level]}"><title>${date}: ${count} contributions</title></rect>`);
+      if (count===0) {
+        chunks.push(`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="2" fill="${palette[0]}"><title>${date}: 0 contributions</title></rect>`);
+      } else {
+        const light=windowLight(date);
+        // Neutral base is visible until the colored window switches on.
+        // The top tile retains the accurate daily count and final palette color.
+        chunks.push(`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="2" fill="${palette[0]}"/><rect class="window-light window-${light.kind}" x="${x}" y="${y}" width="${size}" height="${size}" rx="2" fill="${palette[level]}" style="animation-delay:${light.delay}s"><title>${date}: ${count} contributions</title></rect>`);
+      }
       const mo=new Date(at).getUTCMonth();
       if(mo!==prevMonth && dow===0 && x<830){
         monthLabels.push({x,mo});
@@ -199,7 +230,7 @@ export default {
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
     const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
     if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
-    const cacheKey=new Request(url.origin+"/?v=10&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=11&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
