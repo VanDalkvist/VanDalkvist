@@ -142,7 +142,7 @@ function render(days,theme,lang) {
   const intensity=n=>n<=0?0:Math.min(20,Math.max(1,Math.ceil(20*Math.log1p(n)/Math.log1p(cap))));
   const sunday=first-new Date(first).getUTCDay()*DAY;
   const weeks=Math.floor((end-sunday)/DAY/7)+1;
-  const step=14, size=11, left=70, top=84; // 3-unit gaps, matching native GitHub density
+  const step=15, size=12, left=55, top=84; // 3-unit gutters, plotting across almost the full panel width
   const title=total.toLocaleString(lang==="en"?"en-US":"ru-RU")+(lang==="en"?" GitHub contributions in the last year":" contributions за год");
   const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
@@ -163,7 +163,8 @@ function render(days,theme,lang) {
       }
     }
   }
-  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="27" y="${top+1*step+9}">пн</text><text x="27" y="${top+3*step+9}">ср</text><text x="27" y="${top+5*step+9}">пт</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
+  const weekdays=lang==="en"?["Mon","Wed","Fri"]:["пн","ср","пт"];
+  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+1*step+9}">${weekdays[0]}</text><text x="26" y="${top+3*step+9}">${weekdays[1]}</text><text x="26" y="${top+5*step+9}">${weekdays[2]}</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
   for(let i=0;i<palette.length;i++)chunks.push(`<rect x="${87+i*10}" y="212" width="8" height="8" rx="1.5" fill="${palette[i]}"/>`);
   chunks.push(`<text x="308" y="221">${lang==="en"?"More":"Больше"}</text><text x="854" y="221" text-anchor="end">VANYA / ARC · GitHub</text></g></g></svg>`);
   return chunks.join("");
@@ -175,7 +176,7 @@ function fallback(theme,lang) {
 export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
-    const cacheKey=new Request(url.origin+"/?v=5&theme="+theme+"&lang="+lang,{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=6&theme="+theme+"&lang="+lang,{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
