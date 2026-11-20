@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(0 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Игровые механики</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Repo Story</text></g>
 <g transform="translate(-6 172)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="32" y="38" width="59" height="61" rx="4"/><path d="M44 52 H78 M44 63 H71 M44 74 H80"/><path d="M93 69 H118 M114 64 L120 69 L114 74 M122 69 L144 45 M122 69 L144 95"/><circle cx="150" cy="43" r="10"/><circle cx="150" cy="97" r="10"/></g></g>

@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#15120F"/>
 <g transform="translate(-220 0)" fill="#EBE7E2" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Игровые механики</text>
-<path d="M26 105 H854" fill="none" stroke="#2A2724" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#2C2A27" stroke-width="1"/>
 </g>
 <g class="copy" fill="#EBE7E2"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Banana Jumper</text></g>
 <g transform="translate(-17 162)" stroke="#F2814A" color="#F2814A" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><path d="M43 98 H92 M98 73 H143 M150 48 H178"/><circle cx="112" cy="62" r="6" fill="currentColor"/><path d="M139 93 Q161 101 177 75 Q160 87 139 93"/></g></g>
