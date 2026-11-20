@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(0 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Продукты и интерфейсы</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">ShotgunPro</text></g>
 <g transform="translate(-7 176)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="33" y="34" width="131" height="82" rx="5"/><path d="M33 53 H164 M88 53 V116"/><path d="M49 66 L41 76 L49 86 M68 66 L76 76 L68 86"/><path d="M104 69 H150 M104 80 H140 M104 92 H148"/><circle cx="137" cy="105" r="4"/></g></g>

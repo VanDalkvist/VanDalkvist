@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(-220 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Продукты и интерфейсы</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">TG game-app</text></g>
 <g transform="translate(-25 181)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="51" y="29" width="95" height="90" rx="6"/><path d="M65 47 H130 M65 65 H128 M65 83 H112"/><path d="M64 98 L74 107 L94 86"/><path d="M140 46 L158 38 L150 59 L143 52 L134 48 Z"/></g></g>
