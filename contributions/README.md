@@ -1,4 +1,4 @@
-# Contribution heatmap · VANYA / ARC (v2)
+# Contribution heatmap · VANYA / ARC (v3)
 
 Calendar is inserted **directly under the portrait** and **before the four section navigation tiles** on **both** [RU](../README.md) and [EN](../README.en.md) profile pages.
 
@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=8) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=8) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=8) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=8) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=9) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=9) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=9) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=9) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -15,10 +15,16 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
 - Canonical color source: [Vanya UI CSS tokens](https://github.com/VanDalkvist/vanya-ui/blob/main/src/tokens.css). The Worker uses the exact OKLCH source values for `--ground`, `--ink`, `--ink-faint`, `--accent`, `--surface` / `--surface-inset` and converts to hex for standalone SVG.
 - 21 colors per theme: 0 is neutral/no activity, **1–20 go from light terracotta to deep terracotta**. More contributions ⇒ **darker filled cell**, in either theme. The ramp has the exact theme accent as a color stop.
-- Calendar geometry: `viewBox="0 0 880 235"`, same width as four `220`-wide profile panels. Day cells are **12 × 12** with a **15-unit pitch (3-unit gutters)**. The plotted calendar spans x=55…847 at 53 weeks, aligning its occupied width with neighboring panels while preserving room for weekday labels and the full 880-wide SVG ground. Outer SVG has a full-bleed background rect and *no SVG margins or padding around the panel*, while internal labels have intentional content padding.
-- The profile uses consecutive inline `<picture>` elements, `<img align="top">`, one `<br/>` at each row boundary and no empty Markdown paragraphs. Each group of four section/project tiles remains `25%` wide per tile; calendar is `100%` wide. No extra spacer, line, blank row, or padding was inserted between panels.
-- **Background harmonization caveat:** Existing profile tile SVGs predate the canonical Vanya UI ground colors and embed `#1E1C1A` (dark) / `#F6F5F0` (light), while Vanya UI's canonical ground is a different OKLCH value. Thus DOM spacing is zero, but slight color-field discontinuity may remain at the calendar's edge until those legacy assets are migrated to design tokens. This PR does *not* bulk-rewrite unrelated profile illustrations.
+- Calendar geometry: one 880×235 SVG can be viewed directly, but the GitHub README uses **four cropped 220×235 SVG tiles** from `part=0..3`, each occupying `25%` of the row, exactly like the other profile panels. Cells use **11.5 × 11.5** units with a **14.5-unit pitch (3-unit gutters)**, starting at x=80 to keep English weekday labels clear. The full background extends to all tile edges, with no outer blank margins.
+- The profile uses consecutive inline `<picture>` elements, `<img align="top">`, one `<br/>` at each row boundary and no empty Markdown paragraphs. Each group of four section/project tiles remains `25%` wide per tile; calendar is **four adjacent 25% tiles** whose cropped viewports form the full-width composition. No extra spacer, line, blank row, or padding was inserted between panels.
+- **Background alignment:** All *active* profile tile SVG backgrounds have already been migrated to Vanya UI, including the replacement animated vector portrait. Older generated GIFs and unused historical SVG variants are intentionally retained as archives.
 - Reuse a single date/count/intensity model for all four localized theme variants.
+
+## Four-part embedding
+
+To avoid GitHub's different `width="100%"` handling for a lone linked image, the profile embeds four consecutive `<picture>` images with `width="25%"`, `align="top"`, and `part=0..3`. The Worker produces each quarter by clipping **the same 880×235 render**, keeping all dates, text, and colors aligned. All four must be present in both RU and EN READMEs and in dark/light sources; do not insert whitespace, other elements, or separate line breaks between the four images.
+
+Standalone SVGs without `part` remain available at the preview links above. The Worker cache key includes `part`.
 
 ## Calendar week order
 
@@ -36,7 +42,7 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=8`, partitioned by theme and language.
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=9`, partitioned by theme, language, and cropped part (`0…3` or full).
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
@@ -47,6 +53,7 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 - [ ] 21 colors in each theme; no contributions looks neutral; high contributions are darkest.
 - [ ] Portrait / calendar / section navigation / four-tile grids are directly adjacent without added gap in markup.
 - [ ] Verify the same alignment in GitHub-rendered light and dark modes (including narrow screens).
-- [ ] Confirm no unexpected color edge due to the preexisting SVG ground mismatch.
+- [ ] Confirm no unexpected color seam between four slices or adjacent SVG panels (all active backgrounds use Vanya UI).
+- [ ] EN month/day labels have space between them; Mon/Wed/Fri text never touches day cells.
 
 - EN calendar translates left-hand weekdays (Mon / Wed / Fri), months, title, legend and fallback. RU uses пн / ср / пт.
