@@ -18,16 +18,22 @@ try {
     const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('requestfailed',r=>errors.push(r.url()));
     await page.goto(`http://127.0.0.1:48731/previews/profile/${language==='ru'?'':'en.html'}?theme=${theme}&context=${context}`);
     await page.waitForFunction(()=>[...document.querySelectorAll('article img')].every(i=>i.complete&&i.naturalWidth>0));
-    const images=await page.locator('article img').evaluateAll(imgs=>imgs.slice(0,10).map(i=>{const r=i.getBoundingClientRect();return {src:i.currentSrc,x:r.x,y:r.y,w:r.width,h:r.height};}));
+    const images=await page.locator('article img').evaluateAll(imgs=>imgs.slice(0,11).map(i=>{const r=i.getBoundingClientRect();return {src:i.currentSrc,x:r.x,y:r.y,w:r.width,h:r.height};}));
     assert.ok(images[4].src.includes(`identity-${language}-portrait-v1${theme==='light'?'-light':''}.svg`));
     assert.ok(images[5].src.includes(`avatar-portrait-${theme}-loop-v1.gif`));
     assert.ok(images[4].x<images[5].x,'Text must be left of portrait');
     const left=images[0].x,right=images[3].x+images[3].w;
-    for(const [first,last] of [[4,5],[6,9]]){assert.ok(Math.abs(images[first].x-left)<.1);assert.ok(Math.abs(images[last].x+images[last].w-right)<.1);}
-    const headerGap=images[4].y-(images[0].y+images[0].h),heroGap=images[6].y-(images[4].y+Math.max(images[4].h,images[5].h));
-    console.log({language,theme,context,width,headerGap,heroGap,portrait:images[5].src.split('/').at(-1)});
+    for(const [first,last] of [[4,5],[6,6],[7,10]]){assert.ok(Math.abs(images[first].x-left)<.1);assert.ok(Math.abs(images[last].x+images[last].w-right)<.1);}
+    assert.ok(images[6].src.includes(`lang=${language}`) || images[6].src.includes(`lang%3D${language}`),'Calendar must select the correct language');
+    assert.ok(images[6].src.includes(`theme=${theme}`) || images[6].src.includes(`theme%3D${theme}`),'Calendar must select the correct theme');
+    assert.ok(Math.abs(images[6].w-(right-left))<.1,'Calendar width must equal four adjoining panels');
+    const headerGap=images[4].y-(images[0].y+images[0].h);
+    const heroGap=images[6].y-(images[4].y+Math.max(images[4].h,images[5].h));
+    const calendarGap=images[7].y-(images[6].y+images[6].h);
+    console.log({language,theme,context,width,headerGap,heroGap,calendarGap,portrait:images[5].src.split('/').at(-1)});
     assert.ok(Math.abs(headerGap)<.1,'Header must meet the hero without an inline line-height gap');
-    assert.ok(Math.abs(heroGap)<.1,'Hero must meet the next SVG row');
+    assert.ok(Math.abs(heroGap)<.1,'Hero must meet the calendar');
+    assert.ok(Math.abs(calendarGap)<.1,'Calendar must meet the section tiles');
     assert.deepEqual(errors,[]);
     await page.close();
   }
