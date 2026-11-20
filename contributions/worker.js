@@ -146,7 +146,7 @@ function render(days,theme,lang) {
   const weeks=Math.floor((end-monday)/DAY/7)+1;
   const step=14.5, size=11.5, left=80, top=84; // 3-unit gutters; reserve 54 units for weekday labels, preserve 880 outer width
   const title=total.toLocaleString(lang==="en"?"en-US":"ru-RU")+(lang==="en"?" GitHub contributions in the last year":" contributions за год");
-  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
+  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}<tspan dx="11" font-size="14" font-weight="400" fill="${t.sub}">· ${esc(total.toLocaleString(lang==="en"?"en-US":"ru-RU"))} contributions</tspan></text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   let prevMonth=-1;
   const monthLabels=[];
@@ -172,10 +172,11 @@ function render(days,theme,lang) {
     if(next && next.x-label.x<54) continue;
     chunks.push(`<text x="${label.x}" y="70" font-size="12" fill="${t.sub}">${months[label.mo]}</text>`);
   }
+  // Keep Monday/Wednesday/Friday labels; remove the visual intensity legend
+  // and footer branding while retaining the 235-unit panel height.
+  // Its empty bottom 40+ units give the following section breathing room.
   const weekdays=lang==="en"?["Mon","Wed","Fri"]:["пн","ср","пт"];
-  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+0*step+9}">${weekdays[0]}</text><text x="26" y="${top+2*step+9}">${weekdays[1]}</text><text x="26" y="${top+4*step+9}">${weekdays[2]}</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
-  for(let i=0;i<palette.length;i++)chunks.push(`<rect x="${87+i*10}" y="212" width="8" height="8" rx="1.5" fill="${palette[i]}"/>`);
-  chunks.push(`<text x="308" y="221">${lang==="en"?"More":"Больше"}</text><text x="854" y="221" text-anchor="end">VANYA / ARC · GitHub</text></g></g></svg>`);
+  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+9}">${weekdays[0]}</text><text x="26" y="${top+2*step+9}">${weekdays[1]}</text><text x="26" y="${top+4*step+9}">${weekdays[2]}</text></g></g></svg>`);
   return chunks.join("");
 }
 
@@ -198,7 +199,7 @@ export default {
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
     const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
     if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
-    const cacheKey=new Request(url.origin+"/?v=9&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=10&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
