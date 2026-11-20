@@ -144,7 +144,7 @@ function render(days,theme,lang) {
   const firstWeekday=(new Date(first).getUTCDay()+6)%7; // Mon=0 ... Sun=6
   const monday=first-firstWeekday*DAY;
   const weeks=Math.floor((end-monday)/DAY/7)+1;
-  const step=15, size=12, left=55, top=84; // 3-unit gutters, plotting across almost the full panel width
+  const step=14.5, size=11.5, left=80, top=84; // 3-unit gutters; reserve 54 units for weekday labels, preserve 880 outer width
   const title=total.toLocaleString(lang==="en"?"en-US":"ru-RU")+(lang==="en"?" GitHub contributions in the last year":" contributions за год");
   const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
@@ -169,15 +169,26 @@ function render(days,theme,lang) {
   // Very short partial months at the left edge must not collide with the next label.
   for(let i=0;i<monthLabels.length;i++){
     const label=monthLabels[i], next=monthLabels[i+1];
-    if(next && next.x-label.x<43) continue;
+    if(next && next.x-label.x<54) continue;
     chunks.push(`<text x="${label.x}" y="70" font-size="12" fill="${t.sub}">${months[label.mo]}</text>`);
   }
   const weekdays=lang==="en"?["Mon","Wed","Fri"]:["пн","ср","пт"];
-  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+1*step+9}">${weekdays[0]}</text><text x="26" y="${top+2*step+9}">${weekdays[1]}</text><text x="26" y="${top+4*step+9}">${weekdays[2]}</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
+  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+0*step+9}">${weekdays[0]}</text><text x="26" y="${top+2*step+9}">${weekdays[1]}</text><text x="26" y="${top+4*step+9}">${weekdays[2]}</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
   for(let i=0;i<palette.length;i++)chunks.push(`<rect x="${87+i*10}" y="212" width="8" height="8" rx="1.5" fill="${palette[i]}"/>`);
   chunks.push(`<text x="308" y="221">${lang==="en"?"More":"Больше"}</text><text x="854" y="221" text-anchor="end">VANYA / ARC · GitHub</text></g></g></svg>`);
   return chunks.join("");
 }
+
+// Four 220px columns exactly match GitHub's four adjacent 25%-width SVG panels.
+// Cropping rather than independently rendering keeps date alignment and colors identical.
+// The image viewport clips the full composition, including the full-bleed background.
+function sliceCalendar(full,part,lang){
+  const start=full.indexOf(">");
+  const inner=full.slice(start+1,full.lastIndexOf("</svg>"));
+  const label=lang==="en"?"GitHub contribution calendar":"Календарь активности GitHub";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="220" height="235" viewBox="0 0 220 235" role="img" aria-label="${label} — ${part+1}/4"><g transform="translate(-${220*part} 0)">${inner}</g></svg>`;
+}
+
 function fallback(theme,lang) {
  const t=THEMES[theme];
  return `<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235"><rect width="880" height="235" fill="${t.bg}"/><text x="26" y="35" fill="${t.fg}" font-family="Manrope,Arial" font-size="20">${lang==="en"?"Work rhythm":"Ритм работы"}</text><path d="M26 47 H854" stroke="${t.line}"/><text x="26" y="114" fill="${t.sub}" font-family="Manrope,Arial" font-size="15">${lang==="en"?"GitHub contribution data is temporarily unavailable":"Данные GitHub временно недоступны"}</text></svg>`;
@@ -185,16 +196,18 @@ function fallback(theme,lang) {
 export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
-    const cacheKey=new Request(url.origin+"/?v=8&theme="+theme+"&lang="+lang,{method:"GET"});
+    const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
+    if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
+    const cacheKey=new Request(url.origin+"/?v=9&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
-      const svg=render(await getDays(env),theme,lang);
+      const svg=part===null?render(await getDays(env),theme,lang):sliceCalendar(render(await getDays(env),theme,lang),part,lang);
       const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*"}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
     }catch(err){
-      return new Response(fallback(theme,lang),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=60","X-Content-Type-Options":"nosniff"}});
+      return new Response(part===null?fallback(theme,lang):sliceCalendar(fallback(theme,lang),part,lang),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=60","X-Content-Type-Options":"nosniff"}});
     }
   }
 };
