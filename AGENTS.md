@@ -14,7 +14,7 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
    | `--ink` (primary text) | `#2A241F` | `#EBE7E2` |
    | `--ink-faint` (metadata) | `#635C57` | `#97918A` |
    | `--accent` | `#AA4C23` | `#F2814A` |
-   | `--border` on `--ground` (10% alpha composite) | `#E1DEDA` | `#2C2A27` |
+   | `--border` on `--ground` (10% alpha composite) | `#E2DED8` | `#2C2A27` |
 
 4. Preserve meaningful transparency and drawing geometry. The border color above is an **opaque approximation of a 10% alpha composited border**, not a replacement for CSS `--border` in web UIs. Recalculate if the design system changes. For SVG stroke elements with additional `opacity`, preserve that extra opacity.
 5. The current profile uses Manrope for UI typography, Fraunces only for editorial text, and JetBrains Mono for code/short metadata. Preserve the existing visual rhythms, calm layout, and reduced-motion fallbacks. Do not recolor halftone portrait layers as if they were one flat SVG background.
