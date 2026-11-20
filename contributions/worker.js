@@ -67,7 +67,7 @@ function render(days,theme) {
   const today=Date.now(), nowUTC=Date.UTC(new Date(today).getUTCFullYear(),new Date(today).getUTCMonth(),new Date(today).getUTCDate());
   const current=days.filter(d=>dateUTC(d.date)<=nowUTC).slice(-366);
   if (!current.length) throw new Error("Empty calendar");
-  const end=dateUTC(current[current.length-1].date), first=end-364*DAY;
+  const end=dateUTC(current[current.length-1].date), first=end-365*DAY;
   const included=current.filter(d=>dateUTC(d.date)>=first);
   const map=new Map(included.map(d=>[d.date,d.count]));
   const total=included.reduce((n,d)=>n+d.count,0);
@@ -77,7 +77,7 @@ function render(days,theme) {
   const sunday=first-new Date(first).getUTCDay()*DAY;
   const weeks=Math.floor((end-sunday)/DAY/7)+1;
   const step=15, size=10, left=50, top=84;
-  const title=total.toLocaleString("ru-RU")+" contributions за 365 дней";
+  const title=total.toLocaleString("ru-RU")+" contributions за год";
   const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">Ритм работы</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   let prevMonth=-1;
