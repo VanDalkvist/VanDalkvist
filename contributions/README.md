@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=9) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=9) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=9) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=9) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=10) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=10) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=10) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=10) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -42,7 +42,7 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=9`, partitioned by theme, language, and cropped part (`0…3` or full).
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=10`, partitioned by theme, language, and cropped part (`0…3` or full).
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
@@ -57,3 +57,10 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 - [ ] EN month/day labels have space between them; Mon/Wed/Fri text never touches day cells.
 
 - EN calendar translates left-hand weekdays (Mon / Wed / Fri), months, title, legend and fallback. RU uses пн / ср / пт.
+
+## Minimal calendar presentation (v10)
+
+- Title and activity count share one left-aligned line, e.g. **Work rhythm · 5,163 contributions**, with the count in smaller muted type.
+- The Less/More text, 21-cell legend strip and VANYA / ARC · GitHub credit are intentionally omitted. The 21-step color ramp **still applies to day cells**.
+- The SVG remains exactly **880 × 235** (or each 220 × 235 crop), with its 235-unit height and blank lower margin preserved to make a calm transition to the next section without an HTML spacing gap.
+- Project-grid section headings now match navigation headings at 21/600 Manrope; project titles are 16/600 Manrope across all 64 active grid SVGs.
