@@ -37,7 +37,7 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - Use logarithmic activity normalization against the nonzero day's p99 value (details in `contributions/README.md`). Keep any fallback state explicit.
 - **Weeks start on Monday**, not Sunday. In JavaScript the UTC offset is `(date.getUTCDay() + 6) % 7`; top row is Monday (0), bottom row Sunday (6), and `weekIndex * 7 + rowIndex` must map back to the correct actual date.
 - RU has `пн / ср / пт`; EN has `Mon / Wed / Fri`. With Monday-first rows the visible labels belong at indices **0, 2, 4**; localize months, heading, legend, alt texts, fallback and date captions as necessary.
-- A full standalone 880-unit calendar is available without `part`; embed **all four cropped `part=0|1|2|3` endpoints** with `theme=light|dark` and `lang=ru|en` via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=9`) and update BOTH embed URLs AND the Worker's server-side cache key.
+- A full standalone 880-unit calendar is available without `part`; embed **all four cropped `part=0|1|2|3` endpoints** with `theme=light|dark` and `lang=ru|en` via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=10`) and update BOTH embed URLs AND the Worker's server-side cache key.
 - The Worker is separately deployed on Cloudflare as `vanya-contributions`. A GitHub commit alone does NOT deploy it: update the running Worker, verify response and both URLs, then report what was done.
 - Do not add scheduled GitHub Actions: the intended policy is to keep only backup jobs automated.
 
@@ -65,3 +65,10 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - `contributions/README.md`: calendar implementation details, data sources and cache/deploy operations.
 - `README.md` and `README.en.md`: only the user-facing visual profile; avoid adding engineering prose that disrupts zero-gap layout.
 - `previews/profile/`: browser preview and layout verification, especially for detecting subpixel seams.
+
+## Typographic hierarchy and calendar spacing
+
+- Navigation section headings in wave tiles use Manrope `21`, weight `600`. Section headings above project grids (`seamless-*-v8-tile-1..4-*.svg`) must also use Manrope `21`, weight `600` across RU/EN and light/dark; project *names* use Manrope `16`, weight `600`. Keep the four-slice, full-width heading geometry and line at y=105.
+- The calendar heading is one line: `Ритм работы · N contributions` / `Work rhythm · N contributions`. The count is a subordinate `<tspan>`, not separately right-aligned; number formatting respects the page language.
+- No Less/More legend, color-chip swatches, or `VANYA / ARC · GitHub` footer credit. **Keep SVG height 235** and its full-bleed background unchanged: the intentionally empty bottom space separates the grid visually from the next section without introducing a DOM gap.
+- After modifying `contributions/worker.js`, advance both embed revisions and the Worker cache key, then deploy the Cloudflare Worker manually.
