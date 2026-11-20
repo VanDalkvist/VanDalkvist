@@ -165,7 +165,12 @@ const LIGHT_STYLES=`<style>
 function render(days,theme,lang) {
   const t=THEMES[theme], palette=PALETTES[theme];
   const today=Date.now(), nowUTC=Date.UTC(new Date(today).getUTCFullYear(),new Date(today).getUTCMonth(),new Date(today).getUTCDate());
-  const current=days.filter(d=>dateUTC(d.date)<=nowUTC).slice(-366);
+  // GitHub attributes contributions to the account's calendar date, which can
+  // already be tomorrow in UTC. Use the latest positive day within the +/-1-day
+  // timezone window, rather than silently dropping that day's contributions.
+  const newestActive=days.filter(d=>d.count>0).at(-1);
+  const endAllowed=Math.min(nowUTC+DAY,Math.max(nowUTC,newestActive?dateUTC(newestActive.date):nowUTC));
+  const current=days.filter(d=>dateUTC(d.date)<=endAllowed).slice(-366);
   if (!current.length) throw new Error("Empty calendar");
   const end=dateUTC(current[current.length-1].date), first=end-365*DAY;
   const included=current.filter(d=>dateUTC(d.date)>=first);
@@ -240,7 +245,7 @@ export default {
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
     const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
     if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
-    const cacheKey=new Request(url.origin+"/?v=13&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=14&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
