@@ -24,6 +24,8 @@ for(const lang of ['ru','en'])for(const theme of ['light','dark']) {
       const index=g*4+tile-1, beginning=8.9+index*.9;
       assert.ok(project.includes(`animation:show .45s ease-out ${beginning.toFixed(2)}s both`),'Project text sequenced');
       assert.ok(project.includes(`animation:line .70s ease-out ${(beginning+.2).toFixed(2)}s both`),'Project illustration sequenced');
+      assert.match(project,/<text x="26" y="77" font-size="21" font-weight="600">/,'Section headings must match the navigation typography');
+      assert.match(project,/<text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="16">/,'Project headings must use reduced 16-unit scale');
     }
   }
 }
@@ -36,6 +38,12 @@ for(const [theme,filename,bg] of [['dark','avatar-portrait-dark-v7.svg','#15120F
 const worker=await readFile(new URL('contributions/worker.js',root),'utf8');
 assert.ok(worker.includes('const at=monday+(w*7+dow)*DAY'),'Calendar dates must follow Monday first');
 assert.ok(worker.includes('function sliceCalendar(full,part,lang)'),'Calendar must support four cropped slices');
+assert.ok(worker.includes('height="235"'),'Keep full SVG height for spacing below the calendar');
+assert.ok(worker.includes('font-size="14" font-weight="400" fill="${t.sub}"'),'Inline count must be visually subordinate');
+assert.ok(!worker.includes('VANYA / ARC · GitHub'),'No calendar footer branding');
+assert.ok(!worker.includes('lang==="en"?"Less"'),'No Less/More legend');
+assert.ok(!worker.includes('palette.length;i++'),'No 21-chip footer legend');
+assert.ok(worker.includes('/?v=10&theme='),'Worker cache key should use latest calendar revision');
 
 const browser=await chromium.launch({executablePath:process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
 try {
