@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=7) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=7) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=7) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=7) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=8) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=8) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=8) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=8) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -36,7 +36,7 @@ Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=7`, partitioned by theme and language.
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=8`, partitioned by theme and language.
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
