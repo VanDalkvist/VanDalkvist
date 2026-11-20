@@ -242,7 +242,7 @@ export default {
     try {
       const days=await getDays(env);
       const svg=part===null?render(days,theme,lang):sliceCalendar(render(days,theme,lang),part,lang);
-      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*","X-Contributions-Source":days.source||"unknown"}});
+      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*","Access-Control-Expose-Headers":"X-Contributions-Source","X-Contributions-Source":days.source||"unknown"}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
     }catch(err){
