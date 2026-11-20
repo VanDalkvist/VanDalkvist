@@ -37,13 +37,17 @@ for(const [theme,filename,bg] of [['dark','avatar-portrait-dark-v7.svg','#15120F
 }
 const worker=await readFile(new URL('contributions/worker.js',root),'utf8');
 assert.ok(worker.includes('const at=monday+(w*7+dow)*DAY'),'Calendar dates must follow Monday first');
+assert.ok(worker.includes('nowUTC+DAY'),'Calendar must include account-local day one ahead of UTC');
+assert.ok(worker.includes('days.source="github-graphql"'),'Worker must distinguish authenticated data from fallback');
+assert.ok(worker.includes('X-Contributions-Owner-Matches'),'Worker must expose non-sensitive owner auth verification');
+assert.ok(worker.includes('contributionCalendar { totalContributions'),'Worker must compare against GitHub official total');
 assert.ok(worker.includes('function sliceCalendar(full,part,lang)'),'Calendar must support four cropped slices');
 assert.ok(worker.includes('height="235"'),'Keep full SVG height for spacing below the calendar');
 assert.ok(worker.includes('font-size="14" font-weight="400" fill="${t.sub}"'),'Inline count must be visually subordinate');
 assert.ok(!worker.includes('VANYA / ARC · GitHub'),'No calendar footer branding');
 assert.ok(!worker.includes('lang==="en"?"Less"'),'No Less/More legend');
 assert.ok(!worker.includes('palette.length;i++'),'No 21-chip footer legend');
-assert.ok(worker.includes('/?v=11&theme='),'Worker cache key should use latest calendar revision');
+assert.ok(worker.includes('/?v=14&theme='),'Worker cache key should use latest calendar revision');
 assert.ok(worker.includes('function windowLight(date)'),'Each date must have a deterministic light schedule');
 assert.ok(worker.includes('Math.imul(seed ^ character.charCodeAt(0),16777619)'),'Animation timing must depend on date hash');
 assert.ok(worker.includes('count===0'),'Empty cells must stay neutral');
