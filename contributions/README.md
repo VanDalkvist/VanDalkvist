@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=11) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=11) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=11) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=11) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=14) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=14) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=14) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=14) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -42,7 +42,7 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=11`, partitioned by theme, language, and cropped part (`0…3` or full).
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=14`, partitioned by theme, language, and cropped part (`0…3` or full).
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
@@ -71,3 +71,11 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 - Each positive day has a neutral backing rectangle and a colored overlay using one of three short animations (one click, occasional flicker, gradual warm-up). Dates deterministically choose a delay of 0.10–4.15 seconds and style, consistent across RU/EN, light/dark, and four cropped slices.
 - The finished state is **exactly the same 21-level color map** as the static calendar; zero-contribution days never animate. Reduced-motion users see the completed heatmap immediately.
 - This is a visual sequence of independent SVG clocks, not precise global timing; GitHub may load/cache image slices and the portrait at slightly different moments.
+
+## Owner-authenticated private contributions and UTC boundary (v14)
+
+- Cloudflare Worker `vanya-contributions` now has an encrypted `GITHUB_TOKEN` binding. Owner-authenticated GitHub GraphQL is the primary source, including eligible private activity.
+- The calendar previously excluded the account-local current contribution day when its ISO date was one day ahead of UTC. The Worker now includes the most recent active day within `nowUTC + 1 day`, without including empty future days.
+- On verification the GraphQL `contributionCalendar.totalContributions` and displayed calendar sum **both equalled 5,346**; the old UTC-cutoff visualization showed 5,163.
+- Response diagnostic headers expose the data source (`github-graphql` vs fallbacks), whether `viewer.login` matches the configured account, and GitHub's official aggregate count — no token or private repository metadata.
+- `v=14` in all 16 theme/language/slice image references invalidates GitHub's own image proxy cache after this fix. New data thereafter follows the Worker's 4-hour edge cache and GitHub's separate proxy cache.
