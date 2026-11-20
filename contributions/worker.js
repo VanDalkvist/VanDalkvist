@@ -149,6 +149,7 @@ function render(days,theme,lang) {
   const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
   const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   let prevMonth=-1;
+  const monthLabels=[];
   for(let w=0;w<weeks;w++){
     for(let dow=0;dow<7;dow++){
       const at=monday+(w*7+dow)*DAY;
@@ -160,10 +161,16 @@ function render(days,theme,lang) {
       chunks.push(`<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="2" fill="${palette[level]}"><title>${date}: ${count} contributions</title></rect>`);
       const mo=new Date(at).getUTCMonth();
       if(mo!==prevMonth && dow===0 && x<830){
-        chunks.push(`<text x="${x}" y="70" font-size="12" fill="${t.sub}">${months[mo]}</text>`);
+        monthLabels.push({x,mo});
         prevMonth=mo;
       }
     }
+  }
+  // Very short partial months at the left edge must not collide with the next label.
+  for(let i=0;i<monthLabels.length;i++){
+    const label=monthLabels[i], next=monthLabels[i+1];
+    if(next && next.x-label.x<43) continue;
+    chunks.push(`<text x="${label.x}" y="70" font-size="12" fill="${t.sub}">${months[label.mo]}</text>`);
   }
   const weekdays=lang==="en"?["Mon","Wed","Fri"]:["пн","ср","пт"];
   chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="26" y="${top+1*step+9}">${weekdays[0]}</text><text x="26" y="${top+2*step+9}">${weekdays[1]}</text><text x="26" y="${top+4*step+9}">${weekdays[2]}</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
@@ -178,7 +185,7 @@ function fallback(theme,lang) {
 export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
-    const cacheKey=new Request(url.origin+"/?v=7&theme="+theme+"&lang="+lang,{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=8&theme="+theme+"&lang="+lang,{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
