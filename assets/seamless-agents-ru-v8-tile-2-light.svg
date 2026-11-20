@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(-220 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Агентские пайплайны</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Durable Zero</text></g>
 <g transform="translate(3 171)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="23" y="56" width="35" height="36" rx="5"/><path d="M34 68 H47 M34 77 H47 M59 74 H87 M80 68 L87 74 L80 80"/><ellipse cx="120" cy="56" rx="31" ry="11"/><path d="M89 56 V95 C89 109 151 109 151 95 V56 M89 75 C89 90 151 90 151 75"/><path d="M154 72 H179 M173 66 L179 72 L173 78"/></g></g>

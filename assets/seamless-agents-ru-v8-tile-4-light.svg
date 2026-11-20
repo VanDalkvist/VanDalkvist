@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(-660 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Агентские пайплайны</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Arch Loop</text></g>
 <g transform="translate(-19 194)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><path d="M62 47 Q98 16 136 46 M136 46 L125 39 M136 46 L134 32"/><path d="M148 57 Q163 96 119 114 M119 114 L132 111 M119 114 L125 100"/><path d="M109 117 Q52 116 49 66 M49 66 L57 79 M49 66 L62 68"/><circle cx="65" cy="51" r="7"/><circle cx="140" cy="55" r="7"/><circle cx="117" cy="107" r="7"/><circle cx="51" cy="77" r="6"/></g></g>

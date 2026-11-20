@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(-440 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="32" font-weight="500">Агентские пайплайны</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">Arch Rules</text></g>
 <g transform="translate(-18 179)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><rect x="44" y="31" width="114" height="83" rx="4"/><path d="M59 51 H145 M59 72 H145 M59 93 H145"/><path d="M61 46 L67 52 L76 39 M61 67 L67 73 L76 60"/></g></g>
