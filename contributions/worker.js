@@ -43,7 +43,26 @@ function validate(days) {
   if (map.size<330) throw new Error("Incomplete contribution calendar");
   return [...map].map(([date,count])=>({date,count})).sort((a,b)=>a.date.localeCompare(b.date));
 }
-async function getDays() {
+async function getDays(env) {
+  // Prefer GitHub's official GraphQL data when an owner token is configured.
+  // Store GITHUB_TOKEN only as a Cloudflare Secret, never in the repository.
+  if (env.GITHUB_TOKEN) {
+    try {
+      const response=await fetch("https://api.github.com/graphql",{
+        method:"POST",
+        headers:{"Authorization":"Bearer "+env.GITHUB_TOKEN,"Content-Type":"application/json","User-Agent":"VanyaArc-ContributionCalendar/1.0"},
+        body:JSON.stringify({query:`query Calendar { user(login: "VanDalkvist") { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }`})
+      });
+      if (!response.ok) throw new Error("GitHub GraphQL HTTP "+response.status);
+      const json=await response.json();
+      if (json.errors?.length) throw new Error("GitHub GraphQL query failed");
+      const weeks=json.data?.user?.contributionsCollection?.contributionCalendar?.weeks;
+      if (!Array.isArray(weeks)) throw new Error("Missing contribution weeks");
+      return validate(weeks.flatMap(w=>(w.contributionDays||[]).map(d=>({date:d.date,count:d.contributionCount}))));
+    } catch(err) {
+      console.warn("GitHub GraphQL unavailable; using public contributions",String(err));
+    }
+  }
   // Public GitHub calendar; exact counts come from cell tooltips, not the 0..4 color level.
   try {
     const response=await fetch("https://github.com/users/"+USER+"/contributions",{
@@ -109,11 +128,11 @@ function fallback(theme) {
 export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark";
-    const cacheKey=new Request(url.origin+"/?v=2&theme="+theme,{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=3&theme="+theme,{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
-      const svg=render(await getDays(),theme);
+      const svg=render(await getDays(env),theme);
       const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*"}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
