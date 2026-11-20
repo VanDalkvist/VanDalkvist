@@ -37,7 +37,7 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - Use logarithmic activity normalization against the nonzero day's p99 value (details in `contributions/README.md`). Keep any fallback state explicit.
 - **Weeks start on Monday**, not Sunday. In JavaScript the UTC offset is `(date.getUTCDay() + 6) % 7`; top row is Monday (0), bottom row Sunday (6), and `weekIndex * 7 + rowIndex` must map back to the correct actual date.
 - RU has `пн / ср / пт`; EN has `Mon / Wed / Fri`. With Monday-first rows the visible labels belong at indices **0, 2, 4**; localize months, heading, legend, alt texts, fallback and date captions as necessary.
-- A full standalone 880-unit calendar is available without `part`; embed **all four cropped `part=0|1|2|3` endpoints** with `theme=light|dark` and `lang=ru|en` via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=10`) and update BOTH embed URLs AND the Worker's server-side cache key.
+- A full standalone 880-unit calendar is available without `part`; embed **all four cropped `part=0|1|2|3` endpoints** with `theme=light|dark` and `lang=ru|en` via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=11`) and update BOTH embed URLs AND the Worker's server-side cache key.
 - The Worker is separately deployed on Cloudflare as `vanya-contributions`. A GitHub commit alone does NOT deploy it: update the running Worker, verify response and both URLs, then report what was done.
 - Do not add scheduled GitHub Actions: the intended policy is to keep only backup jobs automated.
 
@@ -72,3 +72,10 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - The calendar heading is one line: `Ритм работы · N contributions` / `Work rhythm · N contributions`. The count is a subordinate `<tspan>`, not separately right-aligned; number formatting respects the page language.
 - No Less/More legend, color-chip swatches, or `VANYA / ARC · GitHub` footer credit. **Keep SVG height 235** and its full-bleed background unchanged: the intentionally empty bottom space separates the grid visually from the next section without introducing a DOM gap.
 - After modifying `contributions/worker.js`, advance both embed revisions and the Worker cache key, then deploy the Cloudflare Worker manually.
+
+## Contribution windows animation
+
+- Every positive-contribution cell has an always-visible neutral inset rect and a colored overlay (`window-light`); no-contribution cells are never animated.
+- The colored overlays switch on **during the first ~5 seconds** of the portrait's ~5.28-second reveal. Deterministic FNV-1a hash of each ISO date sets delay (0.10–4.15 seconds) and one of three effects: a clean click, a brief irregular flicker, or a soft warm-up. No random values at render time, so RU/EN and both color themes agree on the date-to-delay mapping.
+- Each overlay ends at opacity 1 and keeps the correct 21-step color. `prefers-reduced-motion:reduce` bypasses animations, showing every cell in its correct final state immediately. Missing CSS animation support also leaves the final state visible.
+- The four `part=0..3` slices share identical styles and delays from the one full 880-unit SVG; never generate their sequences independently. GitHub's independent image loading prevents a *guaranteed* common start with the portrait, but the timing is designed to overlap it.
