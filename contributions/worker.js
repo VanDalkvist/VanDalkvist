@@ -109,7 +109,7 @@ function fallback(theme) {
 export default {
   async fetch(request,env,ctx){
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark";
-    const cacheKey=new Request(url.origin+"/?theme="+theme,{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=2&theme="+theme,{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
