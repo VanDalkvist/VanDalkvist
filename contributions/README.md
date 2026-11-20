@@ -6,8 +6,8 @@ Calendar is inserted **directly under the portrait** and **before the four secti
 
 | Language | Dark | Light |
 |---|---|---|
-| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=10) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=10) |
-| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=10) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=10) |
+| RU | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=ru&v=11) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=ru&v=11) |
+| EN | [Dark SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=dark&lang=en&v=11) | [Light SVG](https://vanya-contributions.vanyagpt777.workers.dev/?theme=light&lang=en&v=11) |
 
 Cloudflare Worker: `vanya-contributions`; source: [worker.js](./worker.js).
 
@@ -42,7 +42,7 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 ## Operations
 
 - GitHub Actions: no new action, no scheduled CI.
-- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=10`, partitioned by theme, language, and cropped part (`0…3` or full).
+- Successful SVG responses are cached at the Cloudflare edge for 4h; browser may cache for 1h, GitHub image proxy may cache further. Cache revision `v=11`, partitioned by theme, language, and cropped part (`0…3` or full).
 - Cloudflare updates are deployed **manually** via API. Updating source on GitHub alone does not deploy.
 - Cloudflare: **Workers & Pages → vanya-contributions → Settings → Variables and Secrets → Add encrypted Secret** named `GITHUB_TOKEN` if exact owner-visible contribution counts are required. Never add the token to this repo, client code, or the image URL.
 - This feature stays on the draft PR until the owner approves the actual GitHub-rendered dark/light profile and any desired background harmonization.
@@ -64,3 +64,10 @@ Standalone SVGs without `part` remain available at the preview links above. The 
 - The Less/More text, 21-cell legend strip and VANYA / ARC · GitHub credit are intentionally omitted. The 21-step color ramp **still applies to day cells**.
 - The SVG remains exactly **880 × 235** (or each 220 × 235 crop), with its 235-unit height and blank lower margin preserved to make a calm transition to the next section without an HTML spacing gap.
 - Project-grid section headings now match navigation headings at 21/600 Manrope; project titles are 16/600 Manrope across all 64 active grid SVGs.
+
+## Animated windows (v11)
+
+- Active contribution squares start as neutral windows, then light up independently over the first roughly 5 seconds, concurrent with the vector portrait reveal.
+- Each positive day has a neutral backing rectangle and a colored overlay using one of three short animations (one click, occasional flicker, gradual warm-up). Dates deterministically choose a delay of 0.10–4.15 seconds and style, consistent across RU/EN, light/dark, and four cropped slices.
+- The finished state is **exactly the same 21-level color map** as the static calendar; zero-contribution days never animate. Reduced-motion users see the completed heatmap immediately.
+- This is a visual sequence of independent SVG clocks, not precise global timing; GitHub may load/cache image slices and the portrait at slightly different moments.
