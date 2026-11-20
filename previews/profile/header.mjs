@@ -15,7 +15,7 @@ const palette={
     '#F6F5F0':'#F6F3ED', // --ground
     '#29231D':'#2A241F', // --ink
     '#685F54':'#635C57', // --ink-faint
-    '#D4CABD':'#E1DEDA', // --border composited over --ground
+    '#D4CABD':'#E2DED8', // --border composited over --ground
     '#B65A34':'#AA4C23'  // --accent
   }
 };
