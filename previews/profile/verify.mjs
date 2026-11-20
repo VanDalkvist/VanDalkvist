@@ -43,7 +43,15 @@ assert.ok(worker.includes('font-size="14" font-weight="400" fill="${t.sub}"'),'I
 assert.ok(!worker.includes('VANYA / ARC · GitHub'),'No calendar footer branding');
 assert.ok(!worker.includes('lang==="en"?"Less"'),'No Less/More legend');
 assert.ok(!worker.includes('palette.length;i++'),'No 21-chip footer legend');
-assert.ok(worker.includes('/?v=10&theme='),'Worker cache key should use latest calendar revision');
+assert.ok(worker.includes('/?v=11&theme='),'Worker cache key should use latest calendar revision');
+assert.ok(worker.includes('function windowLight(date)'),'Each date must have a deterministic light schedule');
+assert.ok(worker.includes('Math.imul(seed ^ character.charCodeAt(0),16777619)'),'Animation timing must depend on date hash');
+assert.ok(worker.includes('count===0'),'Empty cells must stay neutral');
+assert.ok(worker.includes('class="window-light window-${light.kind}"'),'Active cells need their own colored overlays');
+assert.ok(worker.includes('prefers-reduced-motion:reduce'),'Animated windows must respect reduced motion');
+assert.ok(worker.includes('animation-fill-mode:both'),'Active windows should stay off until their delay, then stay on');
+assert.ok(worker.includes('animation-delay:${light.delay}s'),'Each window must have its date-based timing');
+
 
 const browser=await chromium.launch({executablePath:process.env.CHROME||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
 try {
