@@ -37,7 +37,7 @@ Scope: `README.md`, `README.en.md`, the SVGs they reference, portrait/media asse
 - Use logarithmic activity normalization against the nonzero day's p99 value (details in `contributions/README.md`). Keep any fallback state explicit.
 - **Weeks start on Monday**, not Sunday. In JavaScript the UTC offset is `(date.getUTCDay() + 6) % 7`; top row is Monday (0), bottom row Sunday (6), and `weekIndex * 7 + rowIndex` must map back to the correct actual date.
 - RU has `пн / ср / пт`; EN has `Mon / Wed / Fri`. With Monday-first rows the visible labels belong at indices **0, 2, 4**; localize months, heading, legend, alt texts, fallback and date captions as necessary.
-- The two SVG endpoints are controlled with `theme=light|dark` and `lang=ru|en`; embed via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=7`) and update BOTH embed URLs AND the Worker's server-side cache key.
+- The two SVG endpoints are controlled with `theme=light|dark` and `lang=ru|en`; embed via `<picture><source media="(prefers-color-scheme: dark)">…</picture>` in both READMEs. Bump image-cache revision on changes to SVG output (currently `v=8`) and update BOTH embed URLs AND the Worker's server-side cache key.
 - The Worker is separately deployed on Cloudflare as `vanya-contributions`. A GitHub commit alone does NOT deploy it: update the running Worker, verify response and both URLs, then report what was done.
 - Do not add scheduled GitHub Actions: the intended policy is to keep only backup jobs automated.
 
