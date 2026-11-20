@@ -1,14 +1,61 @@
-// VANYA / ARC contribution heatmap v1
-// 21 discrete steps: index 0 = no activity, 1..20 = increasing intensity.
+// VANYA / ARC Contribution Calendar v2
+// Color authority: VanDalkvist/vanya-ui src/tokens.css (exact OKLCH values).
+// 21 colors: 0 = neutral inactive, 1..20 = progressively darker terracotta.
 const USER = "VanDalkvist";
-const PALETTES = {
-  dark: ["#302B28","#49332E","#5A352C","#6C392D","#7D3E2D","#8D432F","#9D4931","#AC5133","#BA5A37","#C7653C","#D27142","#DA7D49","#E28B50","#E89A5A","#EFA964","#F3B771","#F7C481","#F9D095","#FBDCAD","#FCE6C4","#FFF1DD"],
-  light: ["#EAE4DD","#F6DED0","#F2CFBB","#EDBDA0","#E9AB86","#E29770","#DA845B","#D2724D","#C76443","#BB593B","#AE4F36","#A04732","#91402F","#83392C","#75332B","#682E2A","#5D2927","#542525","#4C2224","#431F21","#371B1E"]
+const DESIGN_TOKENS = {
+  light: {
+    ground: [0.964, 0.008, 85], surface: [0.979, 0.006, 85],
+    inset: [0.940, 0.010, 85], ink: [0.265, 0.012, 60],
+    faint: [0.480, 0.012, 65], accent: [0.530, 0.135, 42]
+  },
+  dark: {
+    ground: [0.185, 0.008, 65], surface: [0.235, 0.010, 65],
+    inset: [0.150, 0.006, 65], ink: [0.930, 0.008, 75],
+    faint: [0.660, 0.012, 75], accent: [0.720, 0.155, 45]
+  }
 };
-const THEMES = {
-  dark: {bg:"#1E1C1A",fg:"#ECE4D6",sub:"#B8AC9F",line:"#504940"},
-  light: {bg:"#F6F5F0",fg:"#29231D",sub:"#685F54",line:"#D4CABD"}
-};
+function oklchHex(L,C,h) {
+  const a=C*Math.cos(h*Math.PI/180), b=C*Math.sin(h*Math.PI/180);
+  const ll=L+0.3963377774*a+0.2158037573*b;
+  const mm=L-0.1055613458*a-0.0638541728*b;
+  const ss=L-0.0894841775*a-1.2914855480*b;
+  const l=ll*ll*ll,m=mm*mm*mm,s=ss*ss*ss;
+  const linear=[
+    4.0767416621*l-3.3077115913*m+0.2309699292*s,
+    -1.2684380046*l+2.6097574011*m-0.3413193965*s,
+    -0.0041960863*l-0.7034186147*m+1.7076147010*s
+  ];
+  return "#"+linear.map(v=>{
+    v=Math.max(0,Math.min(1,v));
+    const gamma=v<=0.0031308?12.92*v:1.055*Math.pow(v,1/2.4)-0.055;
+    return Math.round(gamma*255).toString(16).padStart(2,"0");
+  }).join("").toUpperCase();
+}
+const toHex=v=>oklchHex(...v);
+const lerp=(a,b,t)=>a+(b-a)*t;
+function makePalette(theme) {
+  const t=DESIGN_TOKENS[theme];
+  const dark=theme==="dark";
+  // The canonical @vanya/ui accent is an exact anchor in the ramp.
+  // Zero uses a subdued surface color and never means "highest" activity.
+  const zero=toHex(dark?t.surface:t.inset);
+  const pale=dark?[0.92,0.022,45]:[0.91,0.025,42];
+  const deep=dark?[0.34,0.080,45]:[0.31,0.064,42];
+  const accent=t.accent;
+  const anchor=dark?7:13;
+  const levels=[zero];
+  for(let i=1;i<=20;i++){
+    let start,end,u;
+    if(i<=anchor){start=pale;end=accent;u=(i-1)/(anchor-1);}
+    else {start=accent;end=deep;u=(i-anchor)/(20-anchor);}
+    levels.push(toHex(start.map((v,k)=>lerp(v,end[k],u))));
+  }
+  return levels;
+}
+const PALETTES={dark:makePalette("dark"),light:makePalette("light")};
+const THEMES=Object.fromEntries(Object.entries(DESIGN_TOKENS).map(([name,t])=>[
+  name,{bg:toHex(t.ground),fg:toHex(t.ink),sub:toHex(t.faint),line:toHex(t.faint)}
+]));
 const DAY = 86400000;
 const esc = v => String(v).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[c]));
 const attr = (s,k) => { const m = s.match(new RegExp("(?:^|\\s)"+k+"=[\\\"']([^\\\"']*)[\\\"']", "i")); return m?.[1] ?? null; };
@@ -81,7 +128,7 @@ async function getDays(env) {
     return validate((data.contributions||[]).map(d=>({date:d.date,count:d.count})));
   }
 }
-function render(days,theme) {
+function render(days,theme,lang) {
   const t=THEMES[theme], palette=PALETTES[theme];
   const today=Date.now(), nowUTC=Date.UTC(new Date(today).getUTCFullYear(),new Date(today).getUTCMonth(),new Date(today).getUTCDate());
   const current=days.filter(d=>dateUTC(d.date)<=nowUTC).slice(-366);
@@ -96,9 +143,9 @@ function render(days,theme) {
   const sunday=first-new Date(first).getUTCDay()*DAY;
   const weeks=Math.floor((end-sunday)/DAY/7)+1;
   const step=15, size=10, left=50, top=84;
-  const title=total.toLocaleString("ru-RU")+" contributions за год";
-  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">Ритм работы</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
-  const months=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+  const title=total.toLocaleString(lang==="en"?"en-US":"ru-RU")+(lang==="en"?" GitHub contributions in the last year":" contributions за год");
+  const chunks=[`<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><rect width="880" height="235" fill="${t.bg}"/><g font-family="Manrope,Arial,sans-serif">\n<text x="26" y="32" font-size="19" font-weight="600" fill="${t.fg}">${esc(lang==="en"?"Work rhythm":"Ритм работы")}</text><text x="854" y="31" text-anchor="end" font-size="14" fill="${t.sub}">${esc(total.toLocaleString("ru-RU"))} contributions</text><path d="M26 47 H854" stroke="${t.line}" stroke-width=".85"/>\n`];
+  const months=lang==="en"?["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]:["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
   let prevMonth=-1;
   for(let w=0;w<weeks;w++){
     for(let dow=0;dow<7;dow++){
@@ -116,28 +163,28 @@ function render(days,theme) {
       }
     }
   }
-  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="27" y="${top+1*step+9}">пн</text><text x="27" y="${top+3*step+9}">ср</text><text x="27" y="${top+5*step+9}">пт</text><text x="26" y="221">Меньше</text>`);
+  chunks.push(`<g font-family="Manrope,Arial,sans-serif" font-size="11" fill="${t.sub}"><text x="27" y="${top+1*step+9}">пн</text><text x="27" y="${top+3*step+9}">ср</text><text x="27" y="${top+5*step+9}">пт</text><text x="26" y="221">${lang==="en"?"Less":"Меньше"}</text>`);
   for(let i=0;i<palette.length;i++)chunks.push(`<rect x="${87+i*10}" y="212" width="8" height="8" rx="1.5" fill="${palette[i]}"/>`);
-  chunks.push(`<text x="308" y="221">Больше</text><text x="854" y="221" text-anchor="end">VANYA / ARC · GitHub</text></g></g></svg>`);
+  chunks.push(`<text x="308" y="221">${lang==="en"?"More":"Больше"}</text><text x="854" y="221" text-anchor="end">VANYA / ARC · GitHub</text></g></g></svg>`);
   return chunks.join("");
 }
-function fallback(theme) {
+function fallback(theme,lang) {
  const t=THEMES[theme];
- return `<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235"><rect width="880" height="235" fill="${t.bg}"/><text x="26" y="35" fill="${t.fg}" font-family="Manrope,Arial" font-size="20">Ритм работы</text><path d="M26 47 H854" stroke="${t.line}"/><text x="26" y="114" fill="${t.sub}" font-family="Manrope,Arial" font-size="15">Данные GitHub временно недоступны</text></svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" width="880" height="235" viewBox="0 0 880 235"><rect width="880" height="235" fill="${t.bg}"/><text x="26" y="35" fill="${t.fg}" font-family="Manrope,Arial" font-size="20">${lang==="en"?"Work rhythm":"Ритм работы"}</text><path d="M26 47 H854" stroke="${t.line}"/><text x="26" y="114" fill="${t.sub}" font-family="Manrope,Arial" font-size="15">${lang==="en"?"GitHub contribution data is temporarily unavailable":"Данные GitHub временно недоступны"}</text></svg>`;
 }
 export default {
   async fetch(request,env,ctx){
-    const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark";
-    const cacheKey=new Request(url.origin+"/?v=3&theme="+theme,{method:"GET"});
+    const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
+    const cacheKey=new Request(url.origin+"/?v=4&theme="+theme+"&lang="+lang,{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
-      const svg=render(await getDays(env),theme);
+      const svg=render(await getDays(env),theme,lang);
       const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*"}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
     }catch(err){
-      return new Response(fallback(theme),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=60","X-Content-Type-Options":"nosniff"}});
+      return new Response(fallback(theme,lang),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=60","X-Content-Type-Options":"nosniff"}});
     }
   }
 };
