@@ -3,7 +3,7 @@
 <rect width="220" height="380" fill="#F6F3ED"/>
 <g transform="translate(-440 0)" fill="#2A241F" font-family="Manrope,Arial,sans-serif">
 <text x="26" y="77" font-size="31" font-weight="500">Game mechanics</text>
-<path d="M26 105 H854" fill="none" stroke="#E1DEDA" stroke-width="1"/>
+<path d="M26 105 H854" fill="none" stroke="#E2DED8" stroke-width="1"/>
 </g>
 <g class="copy" fill="#2A241F"><text x="26" y="158" font-family="Manrope,Arial,sans-serif" font-weight="600" font-size="19">AI World</text></g>
 <g transform="translate(26 194)" stroke="#AA4C23" color="#AA4C23" stroke-opacity=".67" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"><g class="drawing"><path d="M0 68 L70 16 L142 70 M17 80 H129 M42 80 V57 H96 V80"/><circle cx="70" cy="16" r="8"/><circle cx="15" cy="77" r="7"/><circle cx="126" cy="77" r="7"/><path d="M70 25 V48 M65 42 L70 49 L75 42"/></g></g>
