@@ -98,14 +98,20 @@ async function getDays(env) {
       const response=await fetch("https://api.github.com/graphql",{
         method:"POST",
         headers:{"Authorization":"Bearer "+env.GITHUB_TOKEN,"Content-Type":"application/json","User-Agent":"VanyaArc-ContributionCalendar/1.0"},
-        body:JSON.stringify({query:`query Calendar { user(login: "VanDalkvist") { contributionsCollection { contributionCalendar { weeks { contributionDays { date contributionCount } } } } } }`})
+        body:JSON.stringify({query:`query Calendar { viewer { login } user(login: "VanDalkvist") { contributionsCollection { restrictedContributionsCount contributionCalendar { totalContributions weeks { contributionDays { date contributionCount } } } } } }`})
       });
       if (!response.ok) throw new Error("GitHub GraphQL HTTP "+response.status);
       const json=await response.json();
       if (json.errors?.length) throw new Error("GitHub GraphQL query failed");
       const weeks=json.data?.user?.contributionsCollection?.contributionCalendar?.weeks;
       if (!Array.isArray(weeks)) throw new Error("Missing contribution weeks");
-      return validate(weeks.flatMap(w=>(w.contributionDays||[]).map(d=>({date:d.date,count:d.contributionCount}))));
+      const days=validate(weeks.flatMap(w=>(w.contributionDays||[]).map(d=>({date:d.date,count:d.contributionCount}))));
+      days.source="github-graphql";
+      // Diagnostic aggregates only; never expose token or private repository details.
+      days.ownerMatches=json.data?.viewer?.login===USER;
+      days.reportedTotal=json.data?.user?.contributionsCollection?.contributionCalendar?.totalContributions;
+      days.restrictedKnown=json.data?.user?.contributionsCollection?.restrictedContributionsCount>0;
+      return days;
     } catch(err) {
       console.warn("GitHub GraphQL unavailable; using public contributions",String(err));
     }
@@ -117,7 +123,9 @@ async function getDays(env) {
       cf:{cacheTtl:14400,cacheEverything:true}
     });
     if (!response.ok) throw new Error("GitHub "+response.status);
-    return validate(parseHtml(await response.text()));
+    const days=validate(parseHtml(await response.text()));
+    days.source="github-public-html";
+    return days;
   } catch (err) {
     // Community API fallback provides exact daily counts without exposing a token.
     const response=await fetch("https://github-contributions-api.jogruber.de/v4/"+USER+"?y=last",{
@@ -125,7 +133,9 @@ async function getDays(env) {
     });
     if (!response.ok) throw new Error("Contribution API "+response.status);
     const data=await response.json();
-    return validate((data.contributions||[]).map(d=>({date:d.date,count:d.count})));
+    const days=validate((data.contributions||[]).map(d=>({date:d.date,count:d.count})));
+    days.source="community-public-api";
+    return days;
   }
 }
 // Stable per-date timing: identical window order in both languages and themes.
@@ -155,7 +165,12 @@ const LIGHT_STYLES=`<style>
 function render(days,theme,lang) {
   const t=THEMES[theme], palette=PALETTES[theme];
   const today=Date.now(), nowUTC=Date.UTC(new Date(today).getUTCFullYear(),new Date(today).getUTCMonth(),new Date(today).getUTCDate());
-  const current=days.filter(d=>dateUTC(d.date)<=nowUTC).slice(-366);
+  // GitHub attributes contributions to the account's calendar date, which can
+  // already be tomorrow in UTC. Use the latest positive day within the +/-1-day
+  // timezone window, rather than silently dropping that day's contributions.
+  const newestActive=days.filter(d=>d.count>0).at(-1);
+  const endAllowed=Math.min(nowUTC+DAY,Math.max(nowUTC,newestActive?dateUTC(newestActive.date):nowUTC));
+  const current=days.filter(d=>dateUTC(d.date)<=endAllowed).slice(-366);
   if (!current.length) throw new Error("Empty calendar");
   const end=dateUTC(current[current.length-1].date), first=end-365*DAY;
   const included=current.filter(d=>dateUTC(d.date)>=first);
@@ -230,12 +245,13 @@ export default {
     const url=new URL(request.url), theme=url.searchParams.get("theme")==="light"?"light":"dark", lang=url.searchParams.get("lang")==="en"?"en":"ru";
     const partRaw=url.searchParams.get("part"), part=partRaw===null?null:Number(partRaw);
     if(partRaw!==null && (!/^[0-3]$/.test(partRaw) || !Number.isInteger(part)))return new Response("Invalid part",{status:400});
-    const cacheKey=new Request(url.origin+"/?v=11&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
+    const cacheKey=new Request(url.origin+"/?v=14&theme="+theme+"&lang="+lang+"&part="+(part===null?"full":part),{method:"GET"});
     const cache=caches.default, cached=await cache.match(cacheKey);
     if(cached)return cached;
     try {
-      const svg=part===null?render(await getDays(env),theme,lang):sliceCalendar(render(await getDays(env),theme,lang),part,lang);
-      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*"}});
+      const days=await getDays(env);
+      const svg=part===null?render(days,theme,lang):sliceCalendar(render(days,theme,lang),part,lang);
+      const res=new Response(svg,{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public,max-age=3600,s-maxage=14400","X-Content-Type-Options":"nosniff","Access-Control-Allow-Origin":"*","Access-Control-Expose-Headers":"X-Contributions-Source, X-Contributions-Owner-Matches, X-Contributions-Reported-Total, X-Contributions-Restricted-Visible","X-Contributions-Source":days.source||"unknown","X-Contributions-Owner-Matches":String(days.ownerMatches===true),"X-Contributions-Reported-Total":String(days.reportedTotal??""),"X-Contributions-Restricted-Visible":String(days.restrictedKnown===true)}});
       ctx.waitUntil(cache.put(cacheKey,res.clone()));
       return res;
     }catch(err){
